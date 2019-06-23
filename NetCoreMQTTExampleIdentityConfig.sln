@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreMQTTExampleIdentityConfig", "NetCoreMQTTExampleIdentityConfig\NetCoreMQTTExampleIdentityConfig.csproj", "{FBBE4C77-5DB8-4B9A-8098-620DC967FFE0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopicCheckerTest", "TopicCheckerTest\TopicCheckerTest.csproj", "{6C5D1DFF-C6E0-4C74-9AF8-0CA41C496489}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{FBBE4C77-5DB8-4B9A-8098-620DC967FFE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBBE4C77-5DB8-4B9A-8098-620DC967FFE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBBE4C77-5DB8-4B9A-8098-620DC967FFE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C5D1DFF-C6E0-4C74-9AF8-0CA41C496489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C5D1DFF-C6E0-4C74-9AF8-0CA41C496489}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C5D1DFF-C6E0-4C74-9AF8-0CA41C496489}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C5D1DFF-C6E0-4C74-9AF8-0CA41C496489}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

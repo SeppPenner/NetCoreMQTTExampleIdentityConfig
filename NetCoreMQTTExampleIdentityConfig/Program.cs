@@ -95,6 +95,16 @@
                                 return;
                             }
 
+                            foreach (var allowedTopic in currentUser.AllowedTopics)
+                            {
+                                var isTopicValid = TopicChecker.Test(allowedTopic, topic);
+                                if (isTopicValid)
+                                {
+                                    c.AcceptSubscription = true;
+                                    return;
+                                }
+                            }
+
                             c.AcceptSubscription = false;
                             c.CloseConnection = true;
                         });
@@ -111,7 +121,7 @@
         /// <returns>A <see cref="Config"/> object.</returns>
         private static Config ReadConfiguration(string currentPath)
         {
-            Config config;
+            Config config = new Config();
 
             var filePath = $"{currentPath}\\config.json";
 
@@ -122,11 +132,9 @@
                     var json = r.ReadToEnd();
                     config = JsonConvert.DeserializeObject<Config>(json);
                 }
-
-                return config;
             }
 
-            return new Config();
+            return config;
         }
     }
 }
