@@ -1,62 +1,53 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NetCoreMQTTExampleJsonConfig;
-
 namespace TopicCheckerTest
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    using TopicCheck;
+
     /// <summary>
-    /// A test class to test the <see cref="TopicCheckerTest"/> with the + operator.
+    ///     A test class to test the <see cref="TopicCheckerTest" /> with the + operator.
     /// </summary>
     [TestClass]
     public class TopicCheckerTestsPlusOperator
     {
         /// <summary>
-        /// Checks the tester with a valid topic for the + operator.
-        /// </summary>
-        [TestMethod]
-        public void CheckSingleValuePlusMatch()
-        {
-            var result = TopicChecker.Test("a/+", "a/b");
-            Assert.IsTrue(result);
-        }
-
-        /// <summary>
-        /// Checks the tester with an invalid topic for the + operator.
+        ///     Checks the tester with an invalid topic for the + operator.
         /// </summary>
         [TestMethod]
         public void CheckSingleValuePlusDontMatch()
         {
-            var result = TopicChecker.Test("a/+", "a/b/c");
+            var result = TopicChecker.Regex("a/+", "a/b/c");
             Assert.IsFalse(result);
         }
 
         /// <summary>
-        /// Checks the tester with an invalid topic with a + for the + operator.
-        /// </summary>
-        [TestMethod]
-        public void CheckSingleValuePlusDontMatchWithPlus()
-        {
-            var result = TopicChecker.Test("a/+", "a/+");
-            Assert.IsFalse(result);
-        }
-
-        /// <summary>
-        /// Checks the tester with an invalid topic with a # for the + operator.
+        ///     Checks the tester with an invalid topic with a # for the + operator.
         /// </summary>
         [TestMethod]
         public void CheckSingleValuePlusDontMatchWithCross()
         {
-            var result = TopicChecker.Test("a/+", "a/#");
+            var result = TopicChecker.Regex("a/+", "a/#");
             Assert.IsFalse(result);
         }
 
         /// <summary>
-        /// Checks the tester with an invalid topic with an invalid char for the + operator.
+        ///     Checks the tester with a valid topic for the + operator.
         /// </summary>
         [TestMethod]
-        public void CheckSingleValuePlusDontMatchInvalidChar()
+        public void CheckSingleValuePlusMatch()
         {
-            var result = TopicChecker.Test("a/+", "a/?");
-            Assert.IsFalse(result);
+            var result = TopicChecker.Regex("a/+", "a/b");
+            Assert.IsTrue(result);
+        }
+
+        /// <summary>
+        ///     Checks the tester with a valid topic with a + for the + operator.
+        /// </summary>
+        [TestMethod]
+        public void CheckSingleValuePlusMatchWithPlus()
+        {
+            var result = TopicChecker.Regex("a/+", "a/+");
+            Assert.IsTrue(result);
         }
     }
 }
