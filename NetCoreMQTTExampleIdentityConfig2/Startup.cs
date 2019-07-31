@@ -8,9 +8,7 @@ namespace NetCoreMQTTExampleIdentityConfig
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
 
-    using Newtonsoft.Json;
     using Storage;
     using Storage.Database;
 
@@ -60,12 +58,10 @@ namespace NetCoreMQTTExampleIdentityConfig
             services.AddDbContext<Storage.DbContext>(
                 options => options.UseNpgsql(databaseConnection.ToConnectionString()));
 
-            services.AddIdentity<User, Role>()
+            services.AddDefaultIdentity<User>()
+                .AddRoles<Role>()
                 .AddEntityFrameworkStores<Storage.DbContext>()
                 .AddDefaultTokenProviders();
-
-            // Add the custom services as needed
-            services.TryAddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
             // Add the MVC stuff
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

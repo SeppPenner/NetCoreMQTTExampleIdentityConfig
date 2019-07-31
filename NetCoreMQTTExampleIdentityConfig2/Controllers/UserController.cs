@@ -37,7 +37,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         /// The password hasher.
         /// </summary>
-        private readonly IPasswordHasher<User> passwordHasher;
+        private readonly PasswordHasher<User> passwordHasher;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserController"/> class.
