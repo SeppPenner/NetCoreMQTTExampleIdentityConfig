@@ -5,6 +5,8 @@ namespace DatabaseSetup
     using Storage.Database;
     using System;
 
+    using Microsoft.AspNetCore.Identity;
+
     /// <summary>
     /// A program to setup the database.
     /// </summary>
@@ -17,7 +19,7 @@ namespace DatabaseSetup
         public static void Main(string[] args)
         {
             Console.WriteLine("Setting up the database...");
-            var context = new MqttContext(new DatabaseConnectionSettings { Host = "localhost", Database = "mqtt", Port = 5432, Username = "mqtt", Password = "mqtt" });
+            var context = new MqttContext(new DatabaseConnectionSettings { Host = "localhost", Database = "mqtt", Port = 5432, Username = "postgres", Password = "postgres" });
 
             Console.WriteLine("Delete database...");
             context.Database.EnsureDeleted();
@@ -38,17 +40,54 @@ namespace DatabaseSetup
         /// <param name="context">The <see cref="MqttContext"/> to use.</param>
         private static void SeedData(MqttContext context)
         {
-            context.Users.Add(new User()
+            var user = new User()
             {
-                UserName = "Hans"
-            });
+                UserName = "Hans",
+                AccessFailedCount = 0,
+                ConcurrencyStamp = new Guid().ToString(),
+                CreatedAt = DateTimeOffset.Now,
+                Email = "hans@hans.de",
+                EmailConfirmed = true,
+                LockoutEnabled = false,
+                NormalizedEmail = "HANS@HANS.DE",
+                NormalizedUserName = "HANS",
+                PhoneNumber = "01234567890",
+                SecurityStamp = new Guid().ToString(),
+                TwoFactorEnabled = false,
+                PhoneNumberConfirmed = true
+            };
+
+            context.Users.Add(user);
+
+            user.PasswordHash = new PasswordHasher<User>().HashPassword(user, "Hans");
 
             context.SaveChanges();
 
             context.UserClaims.Add(new UserClaim()
             {
-                ClaimType = "",
-                ClaimValue = "",
+                ClaimType = "SubscriptionBlacklist",
+                ClaimValue = "a,b/+,c/#",
+                UserId = 1
+            });
+
+            context.UserClaims.Add(new UserClaim()
+            {
+                ClaimType = "SubscriptionWhitelist",
+                ClaimValue = "d,e/+,f/#",
+                UserId = 1
+            });
+
+            context.UserClaims.Add(new UserClaim()
+            {
+                ClaimType = "PublishBlacklist",
+                ClaimValue = "a,b/+,c/#",
+                UserId = 1
+            });
+
+            context.UserClaims.Add(new UserClaim()
+            {
+                ClaimType = "PublishWhitelist",
+                ClaimValue = "d,e/+,f/#",
                 UserId = 1
             });
 
