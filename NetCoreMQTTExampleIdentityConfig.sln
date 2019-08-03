@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseSetup", "DatabaseSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Storage", "Storage\Storage.csproj", "{468DE9D7-5669-4F60-A101-F0D53B525968}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreMQTTExampleIdentityConfig", "NetCoreMQTTExampleIdentityConfig2\NetCoreMQTTExampleIdentityConfig.csproj", "{C215ECA9-8AFF-454B-8EE3-2D2EF025FA3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreMQTTExampleIdentityConfig", "NetCoreMQTTExampleIdentityConfig\NetCoreMQTTExampleIdentityConfig.csproj", "{C215ECA9-8AFF-454B-8EE3-2D2EF025FA3A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopicCheck", "TopicCheck\TopicCheck.csproj", "{F61A0639-FE14-44BA-8777-C94259C16F68}"
 EndProject
