@@ -27,7 +27,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         /// The database context.
         /// </summary>
-        private readonly DbContext databaseContext;
+        private readonly MqttContext databaseContext;
 
         /// <summary>
         /// The user manager.
@@ -43,7 +43,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// Initializes a new instance of the <see cref="UserController"/> class.
         /// </summary>
         /// <param name="mqttSettings">The MQTT settings.</param>
-        public UserController(IOptions<MqttSettings> mqttSettings, DbContext databaseContext, UserManager<User> userManager, PasswordHasher<User> passwordHasher)
+        public UserController(IOptions<MqttSettings> mqttSettings, MqttContext databaseContext, UserManager<User> userManager, PasswordHasher<User> passwordHasher)
         {
             this.mqttSettings = mqttSettings;
             this.databaseContext = databaseContext;

@@ -10,7 +10,7 @@ namespace Storage
     /// <summary>
     /// Base class for the database context.
     /// </summary>
-    public class DbContext : IdentityDbContext<User, Role, long, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
+    public class MqttContext : IdentityDbContext<User, Role, long, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
     {
         /// <summary>
         /// The connection settings.
@@ -18,27 +18,27 @@ namespace Storage
         private readonly DatabaseConnectionSettings connectionSettings;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DbContext"/> class.
+        /// Initializes a new instance of the <see cref="MqttContext"/> class.
         /// </summary>
         /// <param name="connectionSettingsAccessor">The connection settings accessor.</param>
-        public DbContext(IOptions<DatabaseConnectionSettings> connectionSettingsAccessor)
+        public MqttContext(IOptions<DatabaseConnectionSettings> connectionSettingsAccessor)
         {
             this.connectionSettings = connectionSettingsAccessor.Value;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DbContext"/> class.
+        /// Initializes a new instance of the <see cref="MqttContext"/> class.
         /// </summary>
         /// <param name="connectionSettings">The connection settings</param>
-        public DbContext(DatabaseConnectionSettings connectionSettings)
+        public MqttContext(DatabaseConnectionSettings connectionSettings)
         {
             this.connectionSettings = connectionSettings;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DbContext"/> class.
+        /// Initializes a new instance of the <see cref="MqttContext"/> class.
         /// </summary>
-        public DbContext()
+        public MqttContext()
         {
             this.connectionSettings = new DatabaseConnectionSettings();
         }
@@ -48,7 +48,7 @@ namespace Storage
         /// </summary>
         public string ConnectionString => this.connectionSettings.ToConnectionString();
 
-        /// <inheritdoc cref="DbContext"/>
+        /// <inheritdoc cref="MqttContext"/>
         /// <summary>
         ///     Configures the database.
         /// </summary>

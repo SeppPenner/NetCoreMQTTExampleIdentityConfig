@@ -17,7 +17,7 @@ namespace DatabaseSetup
         public static void Main(string[] args)
         {
             Console.WriteLine("Setting up the database...");
-            var context = new DbContext(new DatabaseConnectionSettings { Host = "localhost", Database = "mqtt", Port = 5432, Username = "mqtt", Password = "mqtt" });
+            var context = new MqttContext(new DatabaseConnectionSettings { Host = "localhost", Database = "mqtt", Port = 5432, Username = "mqtt", Password = "mqtt" });
 
             Console.WriteLine("Delete database...");
             context.Database.EnsureDeleted();
@@ -35,8 +35,8 @@ namespace DatabaseSetup
         /// <summary>
         /// Seeds the database with some data. Use this method to add custom data as needed.
         /// </summary>
-        /// <param name="context">The <see cref="DbContext"/> to use.</param>
-        private static void SeedData(DbContext context)
+        /// <param name="context">The <see cref="MqttContext"/> to use.</param>
+        private static void SeedData(MqttContext context)
         {
             context.Users.Add(new User()
             {

@@ -29,9 +29,6 @@ namespace NetCoreMQTTExampleIdentityConfig
         /// <summary>
         /// Gets the configuration.
         /// </summary>
-        /// <value>
-        /// The configuration.
-        /// </value>
         public IConfiguration Configuration { get; }
 
         /// <summary>
@@ -55,12 +52,11 @@ namespace NetCoreMQTTExampleIdentityConfig
             }
 
             // Added the identity stuff and the database connection: https://stackoverflow.com/questions/44483589/unable-to-resolve-service-for-type-microsoft-aspnetcore-identity-usermanager-w
-            services.AddDbContext<Storage.DbContext>(
+            services.AddDbContext<MqttContext>(
                 options => options.UseNpgsql(databaseConnection.ToConnectionString()));
 
-            services.AddDefaultIdentity<User>()
-                .AddRoles<Role>()
-                .AddEntityFrameworkStores<Storage.DbContext>()
+            services.AddIdentity<User, Role>()
+                .AddEntityFrameworkStores<MqttContext>()
                 .AddDefaultTokenProviders();
 
             // Add the MVC stuff

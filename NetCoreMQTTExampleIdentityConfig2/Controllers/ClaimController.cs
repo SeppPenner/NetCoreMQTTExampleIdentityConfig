@@ -26,13 +26,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         /// The database context.
         /// </summary>
-        private readonly DbContext databaseContext;
+        private readonly MqttContext databaseContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClaimController"/> class.
         /// </summary>
         /// <param name="mqttSettings">The MQTT settings.</param>
-        public ClaimController(IOptions<MqttSettings> mqttSettings, DbContext databaseContext)
+        public ClaimController(IOptions<MqttSettings> mqttSettings, MqttContext databaseContext)
         {
             this.mqttSettings = mqttSettings;
             this.databaseContext = databaseContext;
