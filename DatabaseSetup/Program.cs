@@ -1,11 +1,12 @@
 ﻿
 namespace DatabaseSetup
 {
-    using Storage;
-    using Storage.Database;
     using System;
 
     using Microsoft.AspNetCore.Identity;
+
+    using Storage;
+    using Storage.Database;
 
     /// <summary>
     /// A program to setup the database.
@@ -19,7 +20,7 @@ namespace DatabaseSetup
         public static void Main(string[] args)
         {
             Console.WriteLine("Setting up the database...");
-            var context = new MqttContext(new DatabaseConnectionSettings { Host = "localhost", Database = "mqtt", Port = 5432, Username = "postgres", Password = "postgres" });
+            var context = new MqttContext(new DatabaseConnectionSettings { Host = "localhost", Database = "mqtt", Port = 5432, Username = "postgres", Password = "test" });
 
             Console.WriteLine("Delete database...");
             context.Database.EnsureDeleted();
@@ -40,7 +41,11 @@ namespace DatabaseSetup
         /// <param name="context">The <see cref="MqttContext"/> to use.</param>
         private static void SeedData(MqttContext context)
         {
-            var user = new User()
+            var version = new DbVersion { Version = "1.0.0.0", VersionName = "Sicario" };
+            context.DbVersions.Add(version);
+            context.SaveChanges();
+
+            var user = new User
             {
                 UserName = "Hans",
                 AccessFailedCount = 0,
@@ -63,28 +68,28 @@ namespace DatabaseSetup
 
             context.SaveChanges();
 
-            context.UserClaims.Add(new UserClaim()
+            context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "SubscriptionBlacklist",
                 ClaimValue = "a,b/+,c/#",
                 UserId = 1
             });
 
-            context.UserClaims.Add(new UserClaim()
+            context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "SubscriptionWhitelist",
                 ClaimValue = "d,e/+,f/#",
                 UserId = 1
             });
 
-            context.UserClaims.Add(new UserClaim()
+            context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "PublishBlacklist",
                 ClaimValue = "a,b/+,c/#",
                 UserId = 1
             });
 
-            context.UserClaims.Add(new UserClaim()
+            context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "PublishWhitelist",
                 ClaimValue = "d,e/+,f/#",

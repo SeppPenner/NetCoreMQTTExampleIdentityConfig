@@ -1,5 +1,6 @@
 ﻿namespace TopicCheck
 {
+    using System;
     using System.Linq;
     using System.Text.RegularExpressions;
 
@@ -33,7 +34,7 @@
             if (crossCountTopic == 1)
             {
                 // Check if the cross is the last char in the topic
-                var index = topic.IndexOf("#");
+                var index = topic.IndexOf("#", StringComparison.Ordinal);
 
                 if (index != topic.Length - 1)
                 {

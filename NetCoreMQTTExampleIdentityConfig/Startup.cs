@@ -1,6 +1,8 @@
 ﻿
 namespace NetCoreMQTTExampleIdentityConfig
 {
+    using AutoMapper;
+
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
@@ -11,6 +13,7 @@ namespace NetCoreMQTTExampleIdentityConfig
 
     using Storage;
     using Storage.Database;
+    using Storage.Mappings;
 
     /// <summary>
     /// The startup class.
@@ -23,7 +26,7 @@ namespace NetCoreMQTTExampleIdentityConfig
         /// <param name="configuration">The configuration.</param>
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         /// <summary>
@@ -38,26 +41,26 @@ namespace NetCoreMQTTExampleIdentityConfig
         public void ConfigureServices(IServiceCollection services)
         {
             // Added the custom configuration options
-            services.Configure<DatabaseConnectionSettings>(Configuration.GetSection("DatabaseConnectionSettings"));
-            services.Configure<MqttSettings>(Configuration.GetSection("MqttSettings"));
+            services.Configure<DatabaseConnectionSettings>(this.Configuration.GetSection("DatabaseConnectionSettings"));
+            services.Configure<MqttSettings>(this.Configuration.GetSection("MqttSettings"));
 
             // Load database connection settings
             var databaseConnection =
-                Configuration.GetSection("DatabaseConnectionSettings").Get<DatabaseConnectionSettings>();
+                this.Configuration.GetSection("DatabaseConnectionSettings").Get<DatabaseConnectionSettings>() ?? new DatabaseConnectionSettings();
 
-            // Check if the user configured something and load defaults if not
-            if (databaseConnection == null)
-            {
-                databaseConnection = new DatabaseConnectionSettings();
-            }
-
-            // Added the identity stuff and the database connection: https://stackoverflow.com/questions/44483589/unable-to-resolve-service-for-type-microsoft-aspnetcore-identity-usermanager-w
+            // Added the identity stuff and the database connection
             services.AddDbContext<MqttContext>(
                 options => options.UseNpgsql(databaseConnection.ToConnectionString()));
 
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<MqttContext>()
                 .AddDefaultTokenProviders();
+
+            // Add response compression
+            services.AddResponseCompression();
+
+            // Add AutoMapper
+            services.AddAutoMapper(typeof(UserClaimsProfile), typeof(UserProfile));
 
             // Add the MVC stuff
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -79,7 +82,16 @@ namespace NetCoreMQTTExampleIdentityConfig
                 app.UseHsts();
             }
 
+            // Use authentication.
+            app.UseAuthentication();
+
+            // Use response compression.
+            app.UseResponseCompression();
+
+            // Use HTTPS.
             app.UseHttpsRedirection();
+
+            // Use MVC.
             app.UseMvc();
         }
     }

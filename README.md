@@ -20,45 +20,6 @@ The project was written and tested in .NetCore 2.2.
 
 Users can be defined in two different ways (The ways can be combined making sure that the client ids and client id prefixes need to be distinct for all of them, of course):
 
-### Exact definition (Matching exactly one client id):
-
-```json
-{
-  "Port": 8883,
-  "Users": [
-    {
-      "UserName": "Hans",
-      "ClientId": "Hans",
-      "Password": "AQAAAAEAACcQAAAAEKsbxxvBm/peZayW9Qmo9Rd1tRF4SLX4CQ6pNSrDSmCMWYf7o8Iy2pZCTA+No0fB8Q==",
-      "SubscriptionTopicLists": {
-        "BlacklistTopics": [
-          "a",
-          "b/+",
-          "c/#"
-        ],
-        "WhitelistTopics": [
-          "d",
-          "e/+",
-          "f/#"
-        ]
-      },
-      "PublishTopicLists": {
-        "BlacklistTopics": [
-          "a",
-          "b/+",
-          "c/#"
-        ],
-        "WhitelistTopics": [
-          "d",
-          "e/+",
-          "f/#"
-        ]
-      }
-    }
-  ]
-}
-```
-
 ### Various definition (Matching multiple client ids for one username and password combination):
 
 ```json

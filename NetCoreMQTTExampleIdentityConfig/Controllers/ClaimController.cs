@@ -1,11 +1,14 @@
 ﻿
 namespace NetCoreMQTTExampleIdentityConfig.Controllers
 {
+    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
+    using AutoMapper;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
+    using Microsoft.EntityFrameworkCore;
+    using NetCoreMQTTExampleIdentityConfig.Controllers.Extensions;
     using Storage;
     using Storage.Database;
     using Storage.Dto;
@@ -14,76 +17,126 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     /// The claim controller class.
     /// </summary>
     /// <seealso cref="ControllerBase" />
-    [Route("api/[controller]")]
+    [Route("api/claim")]
     [ApiController]
     public class ClaimController : ControllerBase
     {
-        /// <summary>
-        /// The MQTT settings.
-        /// </summary>
-        private readonly IOptions<MqttSettings> mqttSettings;
-
         /// <summary>
         /// The database context.
         /// </summary>
         private readonly MqttContext databaseContext;
 
         /// <summary>
+        /// The automapper.
+        /// </summary>
+        private readonly IMapper autoMapper;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ClaimController"/> class.
         /// </summary>
-        /// <param name="mqttSettings">The MQTT settings.</param>
-        public ClaimController(IOptions<MqttSettings> mqttSettings, MqttContext databaseContext)
+        /// <param name="databaseContext">The database context.</param>
+        /// <param name="autoMapper">The automapper service.</param>
+        public ClaimController(MqttContext databaseContext, IMapper autoMapper)
         {
-            this.mqttSettings = mqttSettings;
             this.databaseContext = databaseContext;
+            this.autoMapper = autoMapper;
         }
 
         /// <summary>
         /// Gets the claims. GET "api/claim".
         /// </summary>
         [HttpGet]
-        public ActionResult<IEnumerable<UserClaim>> GetClaims()
+        [ProducesResponseType(typeof(IEnumerable<DtoReadUserClaim>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<IEnumerable<DtoReadUserClaim>>> GetClaims()
         {
-            return this.databaseContext.UserClaims.ToList();
+            try
+            {
+                var claims = await this.databaseContext.UserClaims.ToListAsync();
+                var returnUserClaims = this.autoMapper.Map<IEnumerable<DtoReadUserClaim>>(claims);
+                return Ok(returnUserClaims);
+            }
+            catch (Exception ex)
+            {
+                return this.InternalServerError(ex);
+            }
         }
 
         /// <summary>
         /// Gets the claim by id. GET "api/claim/5".
         /// </summary>
         [HttpGet("{claimId}")]
-        public ActionResult<UserClaim> GetClaimById(long claimId)
+        [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<DtoReadUserClaim>> GetClaimById(long claimId)
         {
-            return this.databaseContext.UserClaims.FirstOrDefault(u => u.Id == claimId);
+            try
+            {
+                var claim = await this.databaseContext.UserClaims.FirstOrDefaultAsync(u => u.Id == claimId);
+
+                if (claim == null)
+                {
+                    return NotFound(claimId);
+                }
+
+                var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(claim);
+                return Ok(returnUserClaim);
+            }
+            catch (Exception ex)
+            {
+                return this.InternalServerError(ex);
+            }
         }
 
         /// <summary>
         /// Creates the claim. POST "api/claim".
         /// </summary>
         [HttpPost]
-        public async Task CreateClaim([FromBody] ClaimModel claimModel)
+        [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> CreateClaim([FromBody] DtoCreateUpdateUserClaim createUserClaim)
         {
-            var claim = new UserClaim
-                            {
-                                ClaimType = claimModel.ClaimType,
-                                ClaimValue = claimModel.ClaimType,
-                                UserId = claimModel.UserId
-                            };
-            await this.databaseContext.UserClaims.AddAsync(claim);
+            try
+            {
+                var claim = this.autoMapper.Map<UserClaim>(createUserClaim);
+                claim.CreatedAt = DateTimeOffset.Now;
+                await this.databaseContext.UserClaims.AddAsync(claim);
+                var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(createUserClaim);
+                return Ok(returnUserClaim);
+            }
+            catch (Exception ex)
+            {
+                return this.InternalServerError(ex);
+            }
         }
 
         /// <summary>
         /// Updates the claim. PUT "api/claim/5".
         /// </summary>
         [HttpPut("{claimId}")]
-        public async Task UpdateClaim(long claimId, [FromBody] ClaimModel claimModel)
+        [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> UpdateClaim(long claimId, [FromBody] DtoCreateUpdateUserClaim updateUserClaim)
         {
-            var resultClaim = this.databaseContext.UserClaims.FirstOrDefault(b => b.Id == claimId);
-            if (resultClaim != null)
+            try
             {
-                resultClaim.ClaimType = claimModel.ClaimType;
-                resultClaim.ClaimValue = claimModel.ClaimType;
-                resultClaim.UserId = claimModel.UserId;
-                await this.databaseContext.SaveChangesAsync();
+                var resultClaim = await this.databaseContext.UserClaims.FirstOrDefaultAsync(b => b.Id == claimId);
+                if (resultClaim != null)
+                {
+                    resultClaim = this.autoMapper.Map<UserClaim>(updateUserClaim);
+                    resultClaim.UpdatedAt = DateTimeOffset.Now;
+                    this.databaseContext.UserClaims.Update(resultClaim);
+                    var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(updateUserClaim);
+                    return Ok(returnUserClaim);
+                }
+
+                return NotFound(claimId);
+            }
+            catch (Exception ex)
+            {
+                return this.InternalServerError(ex);
             }
         }
 
@@ -91,10 +144,20 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// Deletes the claim by id. DELETE "api/claim/5".
         /// </summary>
         [HttpDelete("{claimId}")]
-        public async Task DeleteClaimById(long claimId)
+        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> DeleteClaimById(long claimId)
         {
-            this.databaseContext.UserClaims.Remove(new UserClaim { Id = claimId });
-            await this.databaseContext.SaveChangesAsync();
+            try
+            {
+                this.databaseContext.UserClaims.Remove(new UserClaim { Id = claimId });
+                await this.databaseContext.SaveChangesAsync();
+                return Ok(claimId);
+            }
+            catch (Exception ex)
+            {
+                return this.InternalServerError(ex);
+            }
         }
     }
 }

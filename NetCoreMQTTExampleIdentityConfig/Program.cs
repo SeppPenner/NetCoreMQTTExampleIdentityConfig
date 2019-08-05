@@ -5,7 +5,7 @@ namespace NetCoreMQTTExampleIdentityConfig
     using Microsoft.AspNetCore.Hosting;
 
     /// <summary>
-    /// The main programm class.
+    /// The main program class.
     /// </summary>
     public class Program
     {

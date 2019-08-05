@@ -1,23 +1,29 @@
 ﻿
 namespace Storage.Database
 {
-    using Microsoft.AspNetCore.Identity;
     using System;
 
+    using Microsoft.AspNetCore.Identity;
+
     /// <summary>
-    /// This class contains the customized user token data if neccessary.
+    /// This class contains the customized user token data if necessary.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Identity.IdentityUserToken{long}" />
-    public class UserToken: IdentityUserToken<long>
+    /// <seealso cref="IdentityUserToken{TKey}" />
+    public class UserToken : IdentityUserToken<long>
     {
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
+        public virtual long Id { get; set; }
+
         /// <summary>
         /// Gets or sets the created at timestamp.
         /// </summary>
-        public DateTimeOffset CreatedAt { get; set; }
+        public virtual DateTimeOffset CreatedAt { get; set; }
 
         /// <summary>
         /// Gets or sets the updated at timestamp.
         /// </summary>
-        public DateTimeOffset UpdatedAt { get; set; }
+        public virtual DateTimeOffset? UpdatedAt { get; set; } = null;
     }
 }

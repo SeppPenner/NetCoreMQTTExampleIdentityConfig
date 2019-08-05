@@ -1,22 +1,23 @@
 ﻿namespace Storage.Database
 {
-    using Microsoft.AspNetCore.Identity;
     using System;
 
+    using Microsoft.AspNetCore.Identity;
+
     /// <summary>
-    /// This class contains the customized user data if neccessary.
+    /// This class contains the customized user data if necessary.
     /// </summary>
-    /// <seealso cref="Microsoft.AspNetCore.Identity.IdentityUser{long}" />
-    public class User: IdentityUser<long>
+    /// <seealso cref="IdentityUser{TKey}" />
+    public class User : IdentityUser<long>
     {
         /// <summary>
         /// Gets or sets the created at timestamp.
         /// </summary>
-        public DateTimeOffset CreatedAt { get; set; }
+        public virtual DateTimeOffset CreatedAt { get; set; }
 
         /// <summary>
         /// Gets or sets the updated at timestamp.
         /// </summary>
-        public DateTimeOffset UpdatedAt { get; set; }
+        public virtual DateTimeOffset? UpdatedAt { get; set; } = null;
     }
 }

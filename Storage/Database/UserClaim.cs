@@ -1,30 +1,29 @@
 ﻿
 namespace Storage.Database
 {
-    using Microsoft.AspNetCore.Identity;
     using System;
 
+    using Microsoft.AspNetCore.Identity;
+
     /// <summary>
-    /// This class contains the customized user claim data if neccessary.
+    /// This class contains the customized user claim data if necessary.
     /// </summary>
-    /// <seealso cref="IdentityUserClaim{long}" />
-    public class UserClaim: IdentityUserClaim<long>
+    /// <seealso cref="IdentityUserClaim{TKey}" />
+    public class UserClaim : IdentityUserClaim<long>
     {
-#pragma warning disable CS0114 // Element blendet vererbtes Element aus; fehlendes Überschreibungsschlüsselwort
         /// <summary>
-        /// Gets or sets the identifier for this user claim.
+        /// Gets or sets the identifier.
         /// </summary>
-        public long Id { get; set; }
-#pragma warning restore CS0114 // Element blendet vererbtes Element aus; fehlendes Überschreibungsschlüsselwort
+        public virtual new long Id { get; set; }
 
         /// <summary>
         /// Gets or sets the created at timestamp.
         /// </summary>
-        public DateTimeOffset CreatedAt { get; set; }
+        public virtual DateTimeOffset CreatedAt { get; set; }
 
         /// <summary>
         /// Gets or sets the updated at timestamp.
         /// </summary>
-        public DateTimeOffset UpdatedAt { get; set; }
+        public virtual DateTimeOffset? UpdatedAt { get; set; } = null;
     }
 }

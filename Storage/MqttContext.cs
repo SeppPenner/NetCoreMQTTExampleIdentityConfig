@@ -1,6 +1,8 @@
 ﻿
 namespace Storage
 {
+    using System.Collections.Generic;
+
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
@@ -18,9 +20,15 @@ namespace Storage
         private readonly DatabaseConnectionSettings connectionSettings;
 
         /// <summary>
+        /// The database versions.
+        /// </summary>
+        public List<DbVersion> DbVersions = new List<DbVersion>();
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MqttContext"/> class.
         /// </summary>
         /// <param name="connectionSettingsAccessor">The connection settings accessor.</param>
+        // ReSharper disable once UnusedMember.Global
         public MqttContext(IOptions<DatabaseConnectionSettings> connectionSettingsAccessor)
         {
             this.connectionSettings = connectionSettingsAccessor.Value;
@@ -38,6 +46,7 @@ namespace Storage
         /// <summary>
         /// Initializes a new instance of the <see cref="MqttContext"/> class.
         /// </summary>
+        // ReSharper disable once UnusedMember.Global
         public MqttContext()
         {
             this.connectionSettings = new DatabaseConnectionSettings();
@@ -46,6 +55,7 @@ namespace Storage
         /// <summary>
         /// Gets the connection string.
         /// </summary>
+        // ReSharper disable once UnusedMember.Global
         public string ConnectionString => this.connectionSettings.ToConnectionString();
 
         /// <inheritdoc cref="IdentityDbContext"/>
@@ -58,6 +68,8 @@ namespace Storage
         /// </param>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            base.OnConfiguring(optionsBuilder);
+
             optionsBuilder
                 .UseNpgsql($"Host={this.connectionSettings.Host};Database={this.connectionSettings.Database};Username={this.connectionSettings.Username};Password={this.connectionSettings.Password};Port={this.connectionSettings.Port}");
         }
@@ -186,6 +198,15 @@ namespace Storage
 
                 // Maps to the UserRoles table
                 b.ToTable("UserRoles");
+            });
+
+            builder.Entity<DbVersion>(b =>
+            {
+                // Primary key
+                b.HasKey(r => new { r.Id });
+
+                // Maps to the DbVersions table
+                b.ToTable("DbVersions");
             });
         }
     }
