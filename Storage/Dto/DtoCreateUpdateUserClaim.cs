@@ -1,5 +1,9 @@
-﻿namespace Storage.Dto
+﻿
+namespace Storage.Dto
 {
+    using Storage.Enumerations;
+    using System.Collections.Generic;
+
     /// <summary>
     /// The user class to create or update a user claim.
     /// </summary>
@@ -13,11 +17,11 @@
         /// <summary>
         /// Gets or sets the type of the claim.
         /// </summary>
-        public string ClaimType { get; set; }
+        public ClaimType ClaimType { get; set; }
 
         /// <summary>
         /// Gets or sets the claim value.
         /// </summary>
-        public string ClaimValue { get; set; }
+        public List<string> ClaimValues { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace DatabaseSetup
         public static void Main(string[] args)
         {
             Console.WriteLine("Setting up the database...");
-            var context = new MqttContext(new DatabaseConnectionSettings { Host = "localhost", Database = "mqtt", Port = 5432, Username = "postgres", Password = "test" });
+            var context = new MqttContext(new DatabaseConnectionSettings { Host = "localhost", Database = "mqtt", Port = 5432, Username = "postgres", Password = "postgres" });
 
             Console.WriteLine("Delete database...");
             context.Database.EnsureDeleted();

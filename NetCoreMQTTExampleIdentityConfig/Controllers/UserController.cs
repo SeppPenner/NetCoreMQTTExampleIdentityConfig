@@ -140,9 +140,16 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 var user = this.autoMapper.Map<User>(createUser);
                 user.CreatedAt = DateTimeOffset.Now;
-                await this.userManager.CreateAsync(user, createUser.Password);
-                var returnUser = this.autoMapper.Map<DtoReadUser>(createUser);
-                return this.Ok(returnUser);
+                var identityResult = await this.userManager.CreateAsync(user, createUser.Password);
+                await this.databaseContext.SaveChangesAsync();
+
+                if (identityResult.Succeeded)
+                {
+                    var returnUser = this.autoMapper.Map<DtoReadUser>(createUser);
+                    return this.Ok(returnUser);
+                }
+
+                return this.InternalServerError(identityResult.Errors);
             }
             catch (Exception ex)
             {
@@ -171,19 +178,30 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
-                var resultUser = await this.databaseContext.Users.FirstOrDefaultAsync(b => b.Id == userId);
+                var resultUser = await this.databaseContext.Users.AsNoTracking().FirstOrDefaultAsync(b => b.Id == userId);
 
                 if (resultUser == null)
                 {
                     return this.NotFound(userId);
                 }
 
+                var concurrencyStamp = resultUser.ConcurrencyStamp;
                 resultUser = this.autoMapper.Map<User>(updateUser);
                 resultUser.UpdatedAt = DateTimeOffset.Now;
                 resultUser.PasswordHash = this.passwordHasher.HashPassword(resultUser, updateUser.Password);
-                await this.userManager.UpdateAsync(resultUser);
-                var returnUser = this.autoMapper.Map<DtoReadUser>(updateUser);
-                return this.Ok(returnUser);
+                resultUser.SecurityStamp = new Guid().ToString();
+                resultUser.ConcurrencyStamp = concurrencyStamp;
+                resultUser.Id = userId;
+                var identityResult = await this.userManager.UpdateAsync(resultUser);
+                await this.databaseContext.SaveChangesAsync();
+
+                if (identityResult.Succeeded)
+                {
+                    var returnUser = this.autoMapper.Map<DtoReadUser>(updateUser);
+                    return this.Ok(returnUser);
+                }
+
+                return this.InternalServerError(identityResult.Errors);
             }
             catch (Exception ex)
             {
@@ -208,7 +226,14 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
-                this.databaseContext.Users.Remove(new User { Id = userId });
+                var user = await this.databaseContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+
+                if (user == null)
+                {
+                    return this.Ok(userId);
+                }
+
+                this.databaseContext.Users.Remove(user);
                 await this.databaseContext.SaveChangesAsync();
                 return this.Ok(userId);
             }

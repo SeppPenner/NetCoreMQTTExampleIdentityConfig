@@ -4,12 +4,16 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using NetCoreMQTTExampleIdentityConfig.Controllers.Extensions;
+
+    using Newtonsoft.Json;
+
     using Storage;
     using Storage.Database;
     using Storage.Dto;
@@ -116,14 +120,33 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> CreateClaim([FromBody] DtoCreateUpdateUserClaim createUserClaim)
+        public async Task<ActionResult> CreateOrUpdateClaim([FromBody] DtoCreateUpdateUserClaim createUserClaim)
         {
             try
             {
                 var claim = this.autoMapper.Map<UserClaim>(createUserClaim);
                 claim.CreatedAt = DateTimeOffset.Now;
-                await this.databaseContext.UserClaims.AddAsync(claim);
-                var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(createUserClaim);
+
+                var foundClaim = await this.databaseContext.UserClaims.FirstOrDefaultAsync(
+                    uc => uc.ClaimType == claim.ClaimType && uc.UserId == claim.UserId);
+
+                DtoReadUserClaim returnUserClaim;
+
+                if (foundClaim == null)
+                {
+                    await this.databaseContext.UserClaims.AddAsync(claim);
+                    returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(createUserClaim);
+                }
+                else
+                {
+                    foundClaim.UpdatedAt = DateTimeOffset.Now;
+                    var currentClaimValue = JsonConvert.DeserializeObject<List<string>>(foundClaim.ClaimValue);
+                    currentClaimValue.AddRange(createUserClaim.ClaimValues);
+                    foundClaim.ClaimValue = JsonConvert.SerializeObject(currentClaimValue.Distinct());
+                    this.databaseContext.UserClaims.Update(foundClaim);
+                    returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(foundClaim);
+                }
+
                 return this.Ok(returnUserClaim);
             }
             catch (Exception ex)

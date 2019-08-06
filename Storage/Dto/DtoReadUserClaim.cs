@@ -1,6 +1,8 @@
 ﻿namespace Storage.Dto
 {
+    using Storage.Enumerations;
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// The user claim class returned from the controller.
@@ -20,12 +22,12 @@
         /// <summary>
         /// Gets or sets the type of the claim.
         /// </summary>
-        public string ClaimType { get; set; }
+        public ClaimType ClaimType { get; set; }
 
         /// <summary>
         /// Gets or sets the claim value.
         /// </summary>
-        public string ClaimValue { get; set; }
+        public List<string> ClaimValues { get; set; }
 
         /// <summary>
         /// Gets or sets the created at timestamp.
