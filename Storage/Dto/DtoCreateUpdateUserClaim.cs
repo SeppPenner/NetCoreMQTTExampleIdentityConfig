@@ -1,6 +1,8 @@
 ﻿
 namespace Storage.Dto
 {
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
     using Storage.Enumerations;
     using System.Collections.Generic;
 
@@ -14,6 +16,7 @@ namespace Storage.Dto
         /// </summary>
         public long UserId { get; set; }
 
+        [JsonConverter(typeof(StringEnumConverter))]
         /// <summary>
         /// Gets or sets the type of the claim.
         /// </summary>
