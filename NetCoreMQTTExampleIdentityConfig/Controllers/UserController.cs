@@ -4,6 +4,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using AutoMapper;
@@ -78,6 +79,12 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             try
             {
                 var users = await this.databaseContext.Users.ToListAsync();
+
+                if (users?.Count == 0)
+                {
+                    return this.Ok("[]");
+                }
+
                 var returnUsers = this.autoMapper.Map<IEnumerable<DtoReadUser>>(users);
                 return this.Ok(returnUsers);
             }
@@ -145,11 +152,11 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
 
                 if (identityResult.Succeeded)
                 {
-                    var returnUser = this.autoMapper.Map<DtoReadUser>(createUser);
+                    var returnUser = this.autoMapper.Map<DtoReadUser>(user);
                     return this.Ok(returnUser);
                 }
 
-                return this.InternalServerError(identityResult.Errors);
+                return this.InternalServerError(identityResult.Errors.Select(e => new IdentityErrorExt(e)));
             }
             catch (Exception ex)
             {
@@ -186,22 +193,25 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                 }
 
                 var concurrencyStamp = resultUser.ConcurrencyStamp;
+                var createdAt = resultUser.CreatedAt;
                 resultUser = this.autoMapper.Map<User>(updateUser);
                 resultUser.UpdatedAt = DateTimeOffset.Now;
                 resultUser.PasswordHash = this.passwordHasher.HashPassword(resultUser, updateUser.Password);
                 resultUser.SecurityStamp = new Guid().ToString();
                 resultUser.ConcurrencyStamp = concurrencyStamp;
                 resultUser.Id = userId;
+                resultUser.CreatedAt = createdAt;
                 var identityResult = await this.userManager.UpdateAsync(resultUser);
                 await this.databaseContext.SaveChangesAsync();
 
                 if (identityResult.Succeeded)
                 {
-                    var returnUser = this.autoMapper.Map<DtoReadUser>(updateUser);
+                    var returnUser = this.autoMapper.Map<DtoReadUser>(resultUser);
+                    returnUser.Id = userId;
                     return this.Ok(returnUser);
                 }
 
-                return this.InternalServerError(identityResult.Errors);
+                return this.InternalServerError(identityResult.Errors.Select(e => new IdentityErrorExt(e)));
             }
             catch (Exception ex)
             {

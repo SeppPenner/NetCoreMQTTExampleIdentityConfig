@@ -2,9 +2,9 @@
 namespace DatabaseSetup
 {
     using System;
-
+    using System.Collections.Generic;
     using Microsoft.AspNetCore.Identity;
-
+    using Newtonsoft.Json;
     using Storage;
     using Storage.Database;
 
@@ -71,29 +71,33 @@ namespace DatabaseSetup
             context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "SubscriptionBlacklist",
-                ClaimValue = "a,b/+,c/#",
-                UserId = 1
+                ClaimValue = JsonConvert.SerializeObject(new List<string>{ "a", "b/+", "c/#" }),
+                UserId = 1,
+                CreatedAt = DateTimeOffset.Now
             });
 
             context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "SubscriptionWhitelist",
-                ClaimValue = "d,e/+,f/#",
-                UserId = 1
+                ClaimValue = JsonConvert.SerializeObject(new List<string> { "d", "e/+", "f/#" }),
+                UserId = 1,
+                CreatedAt = DateTimeOffset.Now
             });
 
             context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "PublishBlacklist",
-                ClaimValue = "a,b/+,c/#",
-                UserId = 1
+                ClaimValue = JsonConvert.SerializeObject(new List<string> { "a", "b/+", "c/#" }),
+                UserId = 1,
+                CreatedAt = DateTimeOffset.Now
             });
 
             context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "PublishWhitelist",
-                ClaimValue = "d,e/+,f/#",
-                UserId = 1
+                ClaimValue = JsonConvert.SerializeObject(new List<string> { "d", "e/+", "f/#" }),
+                UserId = 1,
+                CreatedAt = DateTimeOffset.Now
             });
 
             context.SaveChanges();

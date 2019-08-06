@@ -64,7 +64,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             try
             {
                 var claims = await this.databaseContext.UserClaims.ToListAsync();
-                var returnUserClaims = this.autoMapper.Map<IEnumerable<DtoReadUserClaim>>(claims);
+
+                if (claims?.Count == 0)
+                {
+                    return this.Ok("[]");
+                }
+
+                var returnUserClaims = this.autoMapper.Map<List<DtoReadUserClaim>>(claims);
                 return this.Ok(returnUserClaims);
             }
             catch (Exception ex)
@@ -134,8 +140,10 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
 
                 if (foundClaim == null)
                 {
+                    claim.CreatedAt = DateTimeOffset.Now;
                     await this.databaseContext.UserClaims.AddAsync(claim);
-                    returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(createUserClaim);
+                    await this.databaseContext.SaveChangesAsync();
+                    returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(claim);
                 }
                 else
                 {
@@ -144,6 +152,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                     currentClaimValue.AddRange(createUserClaim.ClaimValues);
                     foundClaim.ClaimValue = JsonConvert.SerializeObject(currentClaimValue.Distinct());
                     this.databaseContext.UserClaims.Update(foundClaim);
+                    await this.databaseContext.SaveChangesAsync();
                     returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(foundClaim);
                 }
 
@@ -176,7 +185,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
-                var resultClaim = await this.databaseContext.UserClaims.FirstOrDefaultAsync(b => b.Id == claimId);
+                var resultClaim = await this.databaseContext.UserClaims.AsNoTracking().FirstOrDefaultAsync(b => b.Id == claimId);
 
                 if (resultClaim == null)
                 {
@@ -185,8 +194,10 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
 
                 resultClaim = this.autoMapper.Map<UserClaim>(updateUserClaim);
                 resultClaim.UpdatedAt = DateTimeOffset.Now;
+                resultClaim.Id = claimId;
                 this.databaseContext.UserClaims.Update(resultClaim);
-                var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(updateUserClaim);
+                await this.databaseContext.SaveChangesAsync();
+                var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(resultClaim);
                 return this.Ok(returnUserClaim);
             }
             catch (Exception ex)
@@ -212,7 +223,14 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
-                this.databaseContext.UserClaims.Remove(new UserClaim { Id = claimId });
+                var claim = await this.databaseContext.UserClaims.AsNoTracking().FirstOrDefaultAsync(c => c.Id == claimId);
+
+                if (claim == null)
+                {
+                    return this.Ok(claimId);
+                }
+
+                this.databaseContext.UserClaims.Remove(claim);
                 await this.databaseContext.SaveChangesAsync();
                 return this.Ok(claimId);
             }

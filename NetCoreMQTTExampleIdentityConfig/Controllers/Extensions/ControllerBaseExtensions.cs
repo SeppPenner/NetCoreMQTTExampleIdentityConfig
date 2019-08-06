@@ -3,7 +3,6 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers.Extensions
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -28,7 +27,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers.Extensions
         /// <param name="controllerBase">The controller base.</param>
         /// <param name="message">The message.</param>
         /// <returns>A <seealso cref="ObjectResult"/>.</returns>
-        public static ObjectResult InternalServerError(this ControllerBase controllerBase, IEnumerable<IdentityError> identityErrors)
+        public static ObjectResult InternalServerError(this ControllerBase controllerBase, IEnumerable<IdentityErrorExt> identityErrors)
         {
             return controllerBase.StatusCode(500, string.Join(";", identityErrors));
         }
