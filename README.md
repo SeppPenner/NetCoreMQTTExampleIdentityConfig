@@ -13,8 +13,7 @@ The project was written and tested in .NetCore 2.2.
 [![Known Vulnerabilities](https://snyk.io/test/github/SeppPenner/NetCoreMQTTExampleIdentityConfig/badge.svg)](https://snyk.io/test/github/SeppPenner/NetCoreMQTTExampleIdentityConfig)
 
 ## How to use this project:
-1. Create your password hashes for each user using the `CreateHashes` project.
-2. Add the passwords and other data to the config.json file.
+1. Create your users and intial setup using the `DatabaseSetup` project or using the API.
 
 ## JSON configuration (Adjust this to your needs):
 
@@ -253,13 +252,6 @@ Users can be defined in two different ways (The ways can be combined making sure
 |U+00FE|`þ`|c3 be|LATIN SMALL LETTER THORN|
 |U+00FF|`ÿ`|c3 bf|LATIN SMALL LETTER Y WITH DIAERESIS|
 
-## Password and Hash examples:
-
-|Password|Hash|
-|-|-|
-|Test|AQAAAAEAACcQAAAAEKsbxxvBm/peZayW9Qmo9Rd1tRF4SLX4CQ6pNSrDSmCMWYf7o8Iy2pZCTA+No0fB8Q==|
-|Test|AQAAAAEAACcQAAAAECcnkwU+LImyVorjCCNzpTGgYOjVxFd+i/PW3MyU2sws80uPkPrppb+AXnvaxVI/0Q==|
-
 ## Create an openssl certificate:
 ```bash
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
@@ -271,4 +263,4 @@ An example certificate is in the folder. Password for all is `test`.
 Change history
 --------------
 
-* **Version 1.0.0.0 (2019-07-14)** : 1.0 release.
+* **Version 1.0.0.0 (2019-08-06)** : 1.0 release.
