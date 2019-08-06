@@ -41,7 +41,7 @@ namespace DatabaseSetup
         /// <param name="context">The <see cref="MqttContext"/> to use.</param>
         private static void SeedData(MqttContext context)
         {
-            var version = new DbVersion { Version = "1.0.0.0", VersionName = "Sicario" };
+            var version = new DbVersion { Version = "1.0.0.0", VersionName = "Sicario", CreatedAt = DateTimeOffset.Now };
             context.DbVersions.Add(version);
             context.SaveChanges();
 

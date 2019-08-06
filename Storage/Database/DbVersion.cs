@@ -2,6 +2,9 @@
 {
     using System;
 
+    /// <summary>
+    /// The database version.
+    /// </summary>
     public class DbVersion
     {
         /// <summary>

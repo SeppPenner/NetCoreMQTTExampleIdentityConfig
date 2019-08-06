@@ -16,12 +16,12 @@
         /// </summary>
         public UserProfile()
         {
-            CreateMap<User, DtoReadUser>();
-            CreateMap<DtoReadUser, User>();
-            CreateMap<User, DtoCreateUpdateUser>();
-            CreateMap<DtoCreateUpdateUser, User>();
-            CreateMap<DtoReadUser, DtoCreateUpdateUser>();
-            CreateMap<DtoCreateUpdateUser, DtoReadUser>();
+            this.CreateMap<User, DtoReadUser>();
+            this.CreateMap<DtoReadUser, User>();
+            this.CreateMap<User, DtoCreateUpdateUser>();
+            this.CreateMap<DtoCreateUpdateUser, User>();
+            this.CreateMap<DtoReadUser, DtoCreateUpdateUser>();
+            this.CreateMap<DtoCreateUpdateUser, DtoReadUser>();
         }
     }
 }

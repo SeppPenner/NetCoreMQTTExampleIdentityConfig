@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Storage.Dto
+﻿namespace Storage.Dto
 {
     /// <summary>
     /// The user class to create or update a user claim.

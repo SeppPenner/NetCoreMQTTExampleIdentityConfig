@@ -3,6 +3,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using AutoMapper;
     using Microsoft.AspNetCore.Http;
@@ -29,6 +30,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         /// The automapper.
         /// </summary>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         private readonly IMapper autoMapper;
 
         /// <summary>
@@ -36,6 +38,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </summary>
         /// <param name="databaseContext">The database context.</param>
         /// <param name="autoMapper">The automapper service.</param>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         public ClaimController(MqttContext databaseContext, IMapper autoMapper)
         {
             this.databaseContext = databaseContext;
@@ -45,6 +48,10 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         /// Gets the claims. GET "api/claim".
         /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<DtoReadUserClaim>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -54,7 +61,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 var claims = await this.databaseContext.UserClaims.ToListAsync();
                 var returnUserClaims = this.autoMapper.Map<IEnumerable<DtoReadUserClaim>>(claims);
-                return Ok(returnUserClaims);
+                return this.Ok(returnUserClaims);
             }
             catch (Exception ex)
             {
@@ -65,6 +72,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         /// Gets the claim by id. GET "api/claim/5".
         /// </summary>
+        /// <param name="claimId">
+        /// The claim Id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet("{claimId}")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
@@ -77,11 +91,11 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
 
                 if (claim == null)
                 {
-                    return NotFound(claimId);
+                    return this.NotFound(claimId);
                 }
 
                 var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(claim);
-                return Ok(returnUserClaim);
+                return this.Ok(returnUserClaim);
             }
             catch (Exception ex)
             {
@@ -92,6 +106,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         /// Creates the claim. POST "api/claim".
         /// </summary>
+        /// <param name="createUserClaim">
+        /// The create User Claim.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpPost]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -103,7 +124,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                 claim.CreatedAt = DateTimeOffset.Now;
                 await this.databaseContext.UserClaims.AddAsync(claim);
                 var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(createUserClaim);
-                return Ok(returnUserClaim);
+                return this.Ok(returnUserClaim);
             }
             catch (Exception ex)
             {
@@ -114,6 +135,16 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         /// Updates the claim. PUT "api/claim/5".
         /// </summary>
+        /// <param name="claimId">
+        /// The claim Id.
+        /// </param>
+        /// <param name="updateUserClaim">
+        /// The update User Claim.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpPut("{claimId}")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
@@ -123,16 +154,17 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             try
             {
                 var resultClaim = await this.databaseContext.UserClaims.FirstOrDefaultAsync(b => b.Id == claimId);
-                if (resultClaim != null)
+
+                if (resultClaim == null)
                 {
-                    resultClaim = this.autoMapper.Map<UserClaim>(updateUserClaim);
-                    resultClaim.UpdatedAt = DateTimeOffset.Now;
-                    this.databaseContext.UserClaims.Update(resultClaim);
-                    var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(updateUserClaim);
-                    return Ok(returnUserClaim);
+                    return this.NotFound(claimId);
                 }
 
-                return NotFound(claimId);
+                resultClaim = this.autoMapper.Map<UserClaim>(updateUserClaim);
+                resultClaim.UpdatedAt = DateTimeOffset.Now;
+                this.databaseContext.UserClaims.Update(resultClaim);
+                var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(updateUserClaim);
+                return this.Ok(returnUserClaim);
             }
             catch (Exception ex)
             {
@@ -143,6 +175,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         /// Deletes the claim by id. DELETE "api/claim/5".
         /// </summary>
+        /// <param name="claimId">
+        /// The claim Id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpDelete("{claimId}")]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -152,7 +191,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 this.databaseContext.UserClaims.Remove(new UserClaim { Id = claimId });
                 await this.databaseContext.SaveChangesAsync();
-                return Ok(claimId);
+                return this.Ok(claimId);
             }
             catch (Exception ex)
             {

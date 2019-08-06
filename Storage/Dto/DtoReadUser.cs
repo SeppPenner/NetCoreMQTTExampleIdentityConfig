@@ -13,7 +13,7 @@
         public DateTimeOffset? LockoutEnd { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether two factor authetication is enabled or not.
+        /// Gets or sets a value indicating whether two factor authentication is enabled or not.
         /// </summary>
         public bool TwoFactorEnabled { get; set; }
 

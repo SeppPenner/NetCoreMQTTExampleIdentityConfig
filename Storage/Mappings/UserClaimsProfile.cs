@@ -16,12 +16,12 @@
         /// </summary>
         public UserClaimsProfile()
         {
-            CreateMap<UserClaim, DtoReadUserClaim>();
-            CreateMap<DtoReadUserClaim, UserClaim>();
-            CreateMap<UserClaim, DtoCreateUpdateUserClaim>();
-            CreateMap<DtoCreateUpdateUserClaim, UserClaim>();
-            CreateMap<DtoReadUserClaim, DtoCreateUpdateUserClaim>();
-            CreateMap<DtoCreateUpdateUserClaim, DtoReadUserClaim>();
+            this.CreateMap<UserClaim, DtoReadUserClaim>();
+            this.CreateMap<DtoReadUserClaim, UserClaim>();
+            this.CreateMap<UserClaim, DtoCreateUpdateUserClaim>();
+            this.CreateMap<DtoCreateUpdateUserClaim, UserClaim>();
+            this.CreateMap<DtoReadUserClaim, DtoCreateUpdateUserClaim>();
+            this.CreateMap<DtoCreateUpdateUserClaim, DtoReadUserClaim>();
         }
     }
 }

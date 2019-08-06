@@ -13,7 +13,7 @@
         /// <summary>
         /// Gets or sets the identifier.
         /// </summary>
-        public virtual new long Id { get; set; }
+        public new virtual long Id { get; set; }
 
         /// <summary>
         /// Gets or sets the created at timestamp.

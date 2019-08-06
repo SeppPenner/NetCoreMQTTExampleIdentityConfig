@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Storage.Dto
+﻿namespace Storage.Dto
 {
+    using System;
+
     /// <summary>
     /// The user claim class returned from the controller.
     /// </summary>
