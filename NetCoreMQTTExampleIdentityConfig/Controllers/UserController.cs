@@ -199,8 +199,9 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                 resultUser.PasswordHash = this.passwordHasher.HashPassword(resultUser, updateUser.Password);
                 resultUser.SecurityStamp = new Guid().ToString();
                 resultUser.ConcurrencyStamp = concurrencyStamp;
-                resultUser.Id = userId;
                 resultUser.CreatedAt = createdAt;
+                resultUser.Id = userId;
+
                 var identityResult = await this.userManager.UpdateAsync(resultUser);
                 await this.databaseContext.SaveChangesAsync();
 
