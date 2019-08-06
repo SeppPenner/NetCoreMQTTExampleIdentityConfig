@@ -1,8 +1,13 @@
 ﻿
 namespace NetCoreMQTTExampleIdentityConfig
 {
+    using System.IO;
+    using System.Reflection;
+
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
+
+    using Serilog;
 
     /// <summary>
     /// The main program class.
@@ -15,6 +20,13 @@ namespace NetCoreMQTTExampleIdentityConfig
         /// <param name="args">The arguments.</param>
         public static void Main(string[] args)
         {
+            var currentLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.RollingFile(Path.Combine(currentLocation, @"..\log\NetCoreMQTTExampleIdentityConfig_{Date}.txt"))
+                .CreateLogger();
+
             CreateWebHostBuilder(args).Build().Run();
         }
 

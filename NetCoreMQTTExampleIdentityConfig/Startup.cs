@@ -1,6 +1,8 @@
 ﻿
 namespace NetCoreMQTTExampleIdentityConfig
 {
+    using System.Reflection;
+
     using AutoMapper;
 
     using Microsoft.AspNetCore.Builder;
@@ -62,6 +64,20 @@ namespace NetCoreMQTTExampleIdentityConfig
             // Add AutoMapper
             services.AddAutoMapper(typeof(UserClaimsProfile), typeof(UserProfile));
 
+            // Add swagger
+            // Add swagger document for the API
+            services.AddSwaggerDocument(config =>
+            {
+                var version = Assembly.GetExecutingAssembly().GetName().Version;
+                config.DocumentName = $"NetCoreMQTTExampleIdentityConfig {version}";
+                config.PostProcess = document =>
+                {
+                    document.Info.Version = $"{version}";
+                    document.Info.Title = "NetCoreMQTTExampleIdentityConfig";
+                    document.Info.Description = "NetCoreMQTTExampleIdentityConfig";
+                };
+            });
+
             // Add the MVC stuff
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -87,6 +103,10 @@ namespace NetCoreMQTTExampleIdentityConfig
 
             // Use response compression.
             app.UseResponseCompression();
+
+            // Use swagger stuff
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             // Use HTTPS.
             app.UseHttpsRedirection();
