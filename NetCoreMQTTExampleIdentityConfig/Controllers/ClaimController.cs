@@ -192,8 +192,10 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                     return this.NotFound(claimId);
                 }
 
+                var createdAt = resultClaim.CreatedAt;
                 resultClaim = this.autoMapper.Map<UserClaim>(updateUserClaim);
                 resultClaim.UpdatedAt = DateTimeOffset.Now;
+                resultClaim.CreatedAt = createdAt;
                 resultClaim.Id = claimId;
                 this.databaseContext.UserClaims.Update(resultClaim);
                 await this.databaseContext.SaveChangesAsync();
