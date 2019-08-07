@@ -9,6 +9,8 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="MQTTnet" Version="3.0.6-beta1" />
+    <PackageReference Include="MQTTnet.AspNetCore" Version="3.0.6-beta1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.0.4" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
@@ -16,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Storage\Storage.csproj" />
+    <ProjectReference Include="..\TopicCheck\TopicCheck.csproj" />
   </ItemGroup>
 
   <ItemGroup>

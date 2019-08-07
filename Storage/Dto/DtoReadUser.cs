@@ -66,5 +66,15 @@
         /// Gets or sets the updated at timestamp.
         /// </summary>
         public virtual DateTimeOffset? UpdatedAt { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the client identifier prefix.
+        /// </summary>
+        public string ClientIdPrefix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client identifier.
+        /// </summary>
+        public string ClientId { get; set; }
     }
 }

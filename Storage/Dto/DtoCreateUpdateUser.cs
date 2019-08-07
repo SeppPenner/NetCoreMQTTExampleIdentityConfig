@@ -56,5 +56,15 @@
         /// Gets or sets the access failed count.
         /// </summary>
         public int AccessFailedCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client identifier prefix.
+        /// </summary>
+        public string ClientIdPrefix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client identifier.
+        /// </summary>
+        public string ClientId { get; set; }
     }
 }

@@ -11,6 +11,16 @@
     public class User : IdentityUser<long>
     {
         /// <summary>
+        /// Gets or sets the client identifier prefix.
+        /// </summary>
+        public virtual string ClientIdPrefix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client identifier.
+        /// </summary>
+        public virtual string ClientId { get; set; }
+
+        /// <summary>
         /// Gets or sets the created at timestamp.
         /// </summary>
         public virtual DateTimeOffset CreatedAt { get; set; }
