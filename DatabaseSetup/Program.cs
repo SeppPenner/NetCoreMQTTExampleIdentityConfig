@@ -71,7 +71,7 @@ namespace DatabaseSetup
             context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "SubscriptionBlacklist",
-                ClaimValue = JsonConvert.SerializeObject(new List<string>{ "a", "b/+", "c/#" }),
+                ClaimValue = JsonConvert.SerializeObject(new List<string> { "a", "b/+", "c/#" }),
                 UserId = 1,
                 CreatedAt = DateTimeOffset.Now
             });

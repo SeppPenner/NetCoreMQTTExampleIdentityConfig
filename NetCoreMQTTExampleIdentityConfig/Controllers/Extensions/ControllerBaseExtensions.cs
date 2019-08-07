@@ -25,7 +25,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers.Extensions
         /// Returns a 500 internal server error.
         /// </summary>
         /// <param name="controllerBase">The controller base.</param>
-        /// <param name="message">The message.</param>
+        /// <param name="identityErrors">The identity errors.</param>
         /// <returns>A <seealso cref="ObjectResult"/>.</returns>
         public static ObjectResult InternalServerError(this ControllerBase controllerBase, IEnumerable<IdentityErrorExt> identityErrors)
         {

@@ -1,12 +1,12 @@
 ﻿
-using Microsoft.AspNetCore.Identity;
-
 namespace NetCoreMQTTExampleIdentityConfig.Controllers.Extensions
 {
+    using Microsoft.AspNetCore.Identity;
+
     /// <summary>
     /// Some extension methods for the <see cref="IdentityError"></see> class.
     /// </summary>
-    public class IdentityErrorExt: IdentityError
+    public class IdentityErrorExt : IdentityError
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IdentityErrorExt"/> class.
@@ -19,9 +19,9 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers.Extensions
         }
 
         /// <summary>
-        /// Converts to string.
+        /// Converts the <seealso cref="IdentityError"/> to a <seealso cref="string"/> value.
         /// </summary>
-        /// <param name="error">The error.</param>
+        /// <returns>A <seealso cref="string"/> value of the <seealso cref="IdentityError"/>.</returns>
         public override string ToString()
         {
             return $"{this.Code}:{this.Description}";

@@ -76,5 +76,14 @@
         /// Gets or sets the client identifier.
         /// </summary>
         public string ClientId { get; set; }
+
+        /// <summary>
+        /// Returns a <seealso cref="string"/> which represents the object instance.
+        /// </summary>
+        /// <returns>A <seealso cref="string"/> representation of the instance.</returns>
+        public override string ToString()
+        {
+            return $"{nameof(this.LockoutEnd)}: {this.LockoutEnd}, {nameof(this.TwoFactorEnabled)}: {this.TwoFactorEnabled}, {nameof(this.PhoneNumberConfirmed)}: {this.PhoneNumberConfirmed}, {nameof(this.PhoneNumber)}: {this.PhoneNumber}, {nameof(this.EmailConfirmed)}: {this.EmailConfirmed}, {nameof(this.Email)}: {this.Email}, {nameof(this.UserName)}: {this.UserName}, {nameof(this.Id)}: {this.Id}, {nameof(this.LockoutEnabled)}: {this.LockoutEnabled}, {nameof(this.AccessFailedCount)}: {this.AccessFailedCount}, {nameof(this.CreatedAt)}: {this.CreatedAt}, {nameof(this.UpdatedAt)}: {this.UpdatedAt}, {nameof(this.ClientIdPrefix)}: {this.ClientIdPrefix}, {nameof(this.ClientId)}: {this.ClientId}";
+        }
     }
 }

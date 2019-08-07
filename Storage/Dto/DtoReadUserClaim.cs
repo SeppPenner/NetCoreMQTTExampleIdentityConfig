@@ -1,10 +1,12 @@
 ﻿namespace Storage.Dto
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-    using Storage.Enumerations;
     using System;
     using System.Collections.Generic;
+
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+
+    using Storage.Enumerations;
 
     /// <summary>
     /// The user claim class returned from the controller.
@@ -21,10 +23,10 @@
         /// </summary>
         public long UserId { get; set; }
 
-        [JsonConverter(typeof(StringEnumConverter))]
         /// <summary>
         /// Gets or sets the type of the claim.
         /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         public ClaimType ClaimType { get; set; }
 
         /// <summary>
@@ -35,13 +37,20 @@
         /// <summary>
         /// Gets or sets the created at timestamp.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
         public DateTimeOffset CreatedAt { get; set; }
 
         /// <summary>
         /// Gets or sets the updated at timestamp.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
         public DateTimeOffset? UpdatedAt { get; set; }
+
+        /// <summary>
+        /// Returns a <seealso cref="string"/> which represents the object instance.
+        /// </summary>
+        /// <returns>A <seealso cref="string"/> representation of the instance.</returns>
+        public override string ToString()
+        {
+            return $"{nameof(this.Id)}: {this.Id}, {nameof(this.UserId)}: {this.UserId}, {nameof(this.ClaimType)}: {this.ClaimType}, {nameof(this.ClaimValues)}: {this.ClaimValues}, {nameof(this.CreatedAt)}: {this.CreatedAt}, {nameof(this.UpdatedAt)}: {this.UpdatedAt}";
+        }
     }
 }

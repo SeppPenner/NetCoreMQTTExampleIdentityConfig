@@ -166,8 +166,9 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                 }
 
                 var identityErrors = identityResult.Errors.Select(e => new IdentityErrorExt(e));
-                Log.Fatal("Error with Asp.Net Core Identity: ", string.Join(";", identityErrors));
-                return this.InternalServerError(identityErrors);
+                var identityErrorList = identityErrors.ToList();
+                Log.Fatal("Error with Asp.Net Core Identity: ", string.Join(";", identityErrorList));
+                return this.InternalServerError(identityErrorList);
             }
             catch (Exception ex)
             {
@@ -228,8 +229,9 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                 }
 
                 var identityErrors = identityResult.Errors.Select(e => new IdentityErrorExt(e));
-                Log.Fatal("Error with Asp.Net Core Identity: ", string.Join(";", identityErrors));
-                return this.InternalServerError(identityErrors);
+                var identityErrorList = identityErrors.ToList();
+                Log.Fatal("Error with Asp.Net Core Identity: ", string.Join(";", identityErrorList));
+                return this.InternalServerError(identityErrorList);
             }
             catch (Exception ex)
             {

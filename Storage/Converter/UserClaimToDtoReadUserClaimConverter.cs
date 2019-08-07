@@ -1,17 +1,21 @@
 ﻿namespace Storage.Converter
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+
     using AutoMapper;
+
     using Newtonsoft.Json;
+
     using Storage.Database;
     using Storage.Dto;
     using Storage.Enumerations;
-    using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Converts a <see cref="UserClaim"/> to a <see cref="DtoReadUserClaim"/>.
     /// </summary>
-    /// <seealso cref="AutoMapper.ITypeConverter{UserClaim, DtoReadUserClaim}" />
+    /// <seealso cref="ITypeConverter{UserClaim, DtoReadUserClaim}" />
     public class UserClaimToDtoReadUserClaimConverter : ITypeConverter<UserClaim, DtoReadUserClaim>
     {
         /// <summary>
@@ -23,8 +27,10 @@
         /// <returns>
         /// Destination object.
         /// </returns>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
         public DtoReadUserClaim Convert(UserClaim source, DtoReadUserClaim destination, ResolutionContext context)
         {
+            // ReSharper disable once UnusedVariable
             var parsed = Enum.TryParse(source.ClaimType, out ClaimType enumValue);
 
             return new DtoReadUserClaim

@@ -1,6 +1,8 @@
 ﻿
 namespace Storage.Converter
 {
+    using System.Diagnostics.CodeAnalysis;
+
     using AutoMapper;
     using Newtonsoft.Json;
     using Storage.Database;
@@ -21,6 +23,7 @@ namespace Storage.Converter
         /// <returns>
         /// Destination object.
         /// </returns>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
         public UserClaim Convert(DtoCreateUpdateUserClaim source, UserClaim destination, ResolutionContext context)
         {
             return new UserClaim

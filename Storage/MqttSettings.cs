@@ -8,7 +8,6 @@
         /// <summary>
         /// Gets or sets the port.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
         public int Port { get; set; } = 8883;
     }
 }

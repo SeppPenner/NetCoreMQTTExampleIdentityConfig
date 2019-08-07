@@ -5,7 +5,7 @@ namespace TopicCheckerTest
     using TopicCheck;
 
     /// <summary>
-    ///     A test class to test the <see cref="TopicCheckerTest" /> with the + operator.
+    ///     A test class to test the <see cref="TopicChecker" /> with the + operator.
     /// </summary>
     [TestClass]
     public class TopicCheckerTestsPlusOperator
