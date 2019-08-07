@@ -13,7 +13,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     using NetCoreMQTTExampleIdentityConfig.Controllers.Extensions;
 
     using Newtonsoft.Json;
-
+    using Serilog;
     using Storage;
     using Storage.Database;
     using Storage.Dto;
@@ -63,6 +63,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
+                Log.Information("Executed GetClaims().");
+
                 var claims = await this.databaseContext.UserClaims.ToListAsync();
 
                 if (claims?.Count == 0)
@@ -75,6 +77,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex.Message, ex);
                 return this.InternalServerError(ex);
             }
         }
@@ -97,10 +100,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
+                Log.Information($"Executed GetClaimById({claimId}).");
+
                 var claim = await this.databaseContext.UserClaims.FirstOrDefaultAsync(u => u.Id == claimId);
 
                 if (claim == null)
                 {
+                    Log.Warning($"Claim with identifier {claimId} not found.");
                     return this.NotFound(claimId);
                 }
 
@@ -109,6 +115,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex.Message, ex);
                 return this.InternalServerError(ex);
             }
         }
@@ -130,6 +137,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
+                Log.Information($"Executed CreateOrUpdateClaim({createUserClaim}).");
+
                 var claim = this.autoMapper.Map<UserClaim>(createUserClaim);
                 claim.CreatedAt = DateTimeOffset.Now;
 
@@ -160,6 +169,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex.Message, ex);
                 return this.InternalServerError(ex);
             }
         }
@@ -185,10 +195,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
+                Log.Information($"Executed UpdateClaim({updateUserClaim}) for claim identifier: {claimId}.");
+
                 var resultClaim = await this.databaseContext.UserClaims.AsNoTracking().FirstOrDefaultAsync(b => b.Id == claimId);
 
                 if (resultClaim == null)
                 {
+                    Log.Warning($"Claim with identifier {claimId} not found.");
                     return this.NotFound(claimId);
                 }
 
@@ -204,6 +217,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex.Message, ex);
                 return this.InternalServerError(ex);
             }
         }
@@ -225,6 +239,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
+                Log.Information($"Executed DeleteClaimById({claimId}).");
+
                 var claim = await this.databaseContext.UserClaims.AsNoTracking().FirstOrDefaultAsync(c => c.Id == claimId);
 
                 if (claim == null)
@@ -238,6 +254,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex.Message, ex);
                 return this.InternalServerError(ex);
             }
         }

@@ -15,7 +15,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     using Microsoft.EntityFrameworkCore;
 
     using NetCoreMQTTExampleIdentityConfig.Controllers.Extensions;
-
+    using Serilog;
     using Storage;
     using Storage.Database;
     using Storage.Dto;
@@ -78,6 +78,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
+                Log.Information("Executed GetUsers().");
+
                 var users = await this.databaseContext.Users.ToListAsync();
 
                 if (users?.Count == 0)
@@ -90,6 +92,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex.Message, ex);
                 return this.InternalServerError(ex);
             }
         }
@@ -112,10 +115,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
+                Log.Information($"Executed GetUserById({userId}).");
+
                 var user = await this.databaseContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
                 if (user == null)
                 {
+                    Log.Warning($"User with identifier {userId} not found.");
                     return this.NotFound(userId);
                 }
 
@@ -124,6 +130,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex.Message, ex);
                 return this.InternalServerError(ex);
             }
         }
@@ -145,6 +152,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
+                Log.Information($"Executed CreateUser({createUser}).");
+
                 var user = this.autoMapper.Map<User>(createUser);
                 user.CreatedAt = DateTimeOffset.Now;
                 var identityResult = await this.userManager.CreateAsync(user, createUser.Password);
@@ -156,10 +165,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                     return this.Ok(returnUser);
                 }
 
-                return this.InternalServerError(identityResult.Errors.Select(e => new IdentityErrorExt(e)));
+                var identityErrors = identityResult.Errors.Select(e => new IdentityErrorExt(e));
+                Log.Fatal("Error with Asp.Net Core Identity: ", string.Join(";", identityErrors));
+                return this.InternalServerError(identityErrors);
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex.Message, ex);
                 return this.InternalServerError(ex);
             }
         }
@@ -185,10 +197,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
+                Log.Information($"Executed UpdateUser({updateUser}) for user identifier: {userId}.");
+
                 var resultUser = await this.databaseContext.Users.AsNoTracking().FirstOrDefaultAsync(b => b.Id == userId);
 
                 if (resultUser == null)
                 {
+                    Log.Warning($"User with identifier {userId} not found.");
                     return this.NotFound(userId);
                 }
 
@@ -212,10 +227,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                     return this.Ok(returnUser);
                 }
 
-                return this.InternalServerError(identityResult.Errors.Select(e => new IdentityErrorExt(e)));
+                var identityErrors = identityResult.Errors.Select(e => new IdentityErrorExt(e));
+                Log.Fatal("Error with Asp.Net Core Identity: ", string.Join(";", identityErrors));
+                return this.InternalServerError(identityErrors);
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex.Message, ex);
                 return this.InternalServerError(ex);
             }
         }
@@ -237,6 +255,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         {
             try
             {
+                Log.Information($"Executed DeleteUserById({userId}).");
+
                 var user = await this.databaseContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
 
                 if (user == null)
@@ -250,6 +270,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex.Message, ex);
                 return this.InternalServerError(ex);
             }
         }
