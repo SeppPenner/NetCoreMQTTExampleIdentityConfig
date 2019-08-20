@@ -5,6 +5,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
     using AutoMapper;
     using Microsoft.AspNetCore.Http;
@@ -13,6 +14,9 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     using NetCoreMQTTExampleIdentityConfig.Controllers.Extensions;
 
     using Newtonsoft.Json;
+
+    using NSwag.Annotations;
+
     using Serilog;
     using Storage;
     using Storage.Database;
@@ -24,6 +28,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     /// <seealso cref="ControllerBase" />
     [Route("api/claim")]
     [ApiController]
+    [OpenApiTag("Claim", Description = "Claim management.")]
     public class ClaimController : ControllerBase
     {
         /// <summary>
@@ -57,6 +62,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<DtoReadUserClaim>), Description = "Claims found.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(IEnumerable<DtoReadUserClaim>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<DtoReadUserClaim>>> GetClaims()
@@ -93,6 +100,9 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet("{claimId}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(DtoReadUserClaim), Description = "Claim found.")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(int), Description = "Claim not found.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -131,6 +141,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(DtoReadUserClaim), Description = "Claim created.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> CreateOrUpdateClaim([FromBody] DtoCreateUpdateUserClaim createUserClaim)
@@ -188,6 +200,9 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpPut("{claimId}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(DtoReadUserClaim), Description = "Claim updated.")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(int), Description = "Claim not found.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -233,6 +248,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpDelete("{claimId}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(int), Description = "Claim deleted.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteClaimById(long claimId)
