@@ -108,7 +108,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// Gets the user by id. GET "api/user/5".
         /// </summary>
         /// <param name="userId">
-        /// The user Id.
+        /// The user identifier.
         /// </param>
         /// <returns>
         /// The <see cref="Task"/>.
@@ -193,7 +193,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// Updates the user. PUT "api/user/5".
         /// </summary>
         /// <param name="userId">
-        /// The user Id.
+        /// The user identifier.
         /// </param>
         /// <param name="updateUser">
         /// The update User.
@@ -259,7 +259,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// Deletes the user by id. DELETE "api/user/5".
         /// </summary>
         /// <param name="userId">
-        /// The user Id.
+        /// The user identifier.
         /// </param>
         /// <returns>
         /// The <see cref="Task"/>.

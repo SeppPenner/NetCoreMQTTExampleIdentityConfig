@@ -93,7 +93,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// Gets the claim by id. GET "api/claim/5".
         /// </summary>
         /// <param name="claimId">
-        /// The claim Id.
+        /// The claim identifier.
         /// </param>
         /// <returns>
         /// The <see cref="Task"/>.
@@ -190,7 +190,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// Updates the claim. PUT "api/claim/5".
         /// </summary>
         /// <param name="claimId">
-        /// The claim Id.
+        /// The claim identifier.
         /// </param>
         /// <param name="updateUserClaim">
         /// The update User Claim.
@@ -241,7 +241,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// Deletes the claim by id. DELETE "api/claim/5".
         /// </summary>
         /// <param name="claimId">
-        /// The claim Id.
+        /// The claim identifier.
         /// </param>
         /// <returns>
         /// The <see cref="Task"/>.
