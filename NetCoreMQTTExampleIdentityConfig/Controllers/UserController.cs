@@ -5,6 +5,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
 
     using AutoMapper;
@@ -15,6 +16,9 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     using Microsoft.EntityFrameworkCore;
 
     using NetCoreMQTTExampleIdentityConfig.Controllers.Extensions;
+
+    using NSwag.Annotations;
+
     using Serilog;
     using Storage;
     using Storage.Database;
@@ -26,6 +30,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     /// <seealso cref="ControllerBase" />
     [Route("api/user")]
     [ApiController]
+    [OpenApiTag("User", Description = "User management.")]
     public class UserController : ControllerBase
     {
         /// <summary>
@@ -72,6 +77,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<DtoReadUser>), Description = "Users found.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(IEnumerable<DtoReadUser>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<DtoReadUser>>> GetUsers()
@@ -108,6 +115,9 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet("{userId}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(DtoReadUser), Description = "User found.")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(int), Description = "User not found.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(DtoReadUser), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -146,6 +156,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(DtoReadUser), Description = "User created.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(DtoReadUser), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> CreateUser([FromBody] DtoCreateUpdateUser createUser)
@@ -191,6 +203,9 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpPut("{userId}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(DtoReadUser), Description = "User updated.")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(int), Description = "User not found.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(DtoReadUser), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -251,6 +266,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </returns>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         [HttpDelete("{userId}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(int), Description = "User deleted.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteUserById(long userId)
