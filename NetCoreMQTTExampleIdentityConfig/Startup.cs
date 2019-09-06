@@ -125,7 +125,7 @@
 
             // Add swagger
             // Add swagger document for the API
-            services.AddSwaggerDocument(
+            services.AddOpenApiDocument(
                 config =>
                 {
                     var version = Assembly.GetExecutingAssembly().GetName().Version;
