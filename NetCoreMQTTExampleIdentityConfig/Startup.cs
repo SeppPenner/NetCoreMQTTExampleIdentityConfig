@@ -16,7 +16,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-
+    using Microsoft.Extensions.Hosting;
     using MQTTnet.AspNetCore;
     using MQTTnet.Protocol;
 
@@ -63,9 +63,9 @@
         /// </summary>
         /// <param name="app">The application.</param>
         /// <param name="env">The env.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.EnvironmentName == Environments.Development)
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -86,9 +86,6 @@
 
             // Use HTTPS.
             app.UseHttpsRedirection();
-
-            // Use MVC.
-            app.UseMvc();
         }
 
         /// <summary>
@@ -148,10 +145,11 @@
             // Add MQTT stuff
             services.AddHostedMqttServer(
                 builder => builder
-
-                    //// .WithDefaultEndpoint().WithDefaultEndpointPort(1883) // For testing purposes only
-                    .WithDefaultEndpoint().WithDefaultEndpointPort(1883) // For testing purposes only
-                    // .WithoutDefaultEndpoint()
+#if DEBUG
+                    .WithDefaultEndpoint().WithDefaultEndpointPort(1883)
+#else
+                    .WithoutDefaultEndpoint()
+#endif
                     .WithEncryptedEndpoint().WithEncryptedEndpointPort(mqttSettings.Port)
                     .WithEncryptionCertificate(certificate.Export(X509ContentType.Pfx))
                     .WithEncryptionSslProtocol(SslProtocols.Tls12).WithConnectionValidator(
@@ -367,7 +365,7 @@
             services.AddMqttConnectionHandler();
 
             // Add the MVC stuff
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
         /// <summary>
