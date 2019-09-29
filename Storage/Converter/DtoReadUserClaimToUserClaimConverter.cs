@@ -1,14 +1,11 @@
-﻿namespace Storage.Converter
+﻿using System.Diagnostics.CodeAnalysis;
+using AutoMapper;
+using Newtonsoft.Json;
+using Storage.Database;
+using Storage.Dto;
+
+namespace Storage.Converter
 {
-    using System.Diagnostics.CodeAnalysis;
-
-    using AutoMapper;
-
-    using Newtonsoft.Json;
-
-    using Storage.Database;
-    using Storage.Dto;
-
     /// <summary>
     ///     Converts a <see cref="DtoReadUserClaim" /> to a <see cref="UserClaim" />.
     /// </summary>
@@ -31,14 +28,14 @@
         public UserClaim Convert(DtoReadUserClaim source, UserClaim destination, ResolutionContext context)
         {
             return new UserClaim
-                   {
-                       Id = source.Id,
-                       UserId = source.UserId,
-                       ClaimType = source.ClaimType.ToString(),
-                       ClaimValue = JsonConvert.SerializeObject(source.ClaimValues),
-                       UpdatedAt = source.UpdatedAt,
-                       CreatedAt = source.CreatedAt
-                   };
+            {
+                Id = source.Id,
+                UserId = source.UserId,
+                ClaimType = source.ClaimType.ToString(),
+                ClaimValue = JsonConvert.SerializeObject(source.ClaimValues),
+                UpdatedAt = source.UpdatedAt,
+                CreatedAt = source.CreatedAt
+            };
         }
     }
 }

@@ -1,9 +1,8 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TopicCheck;
+
 namespace TopicCheckerTest
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-    using TopicCheck;
-
     /// <summary>
     ///     A test class to test the <see cref="TopicChecker" /> with the + operator.
     /// </summary>

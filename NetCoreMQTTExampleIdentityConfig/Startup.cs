@@ -1,34 +1,29 @@
-﻿namespace NetCoreMQTTExampleIdentityConfig
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
+using AutoMapper;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MQTTnet.AspNetCore;
+using MQTTnet.Protocol;
+using Newtonsoft.Json;
+using Storage;
+using Storage.Database;
+using Storage.Enumerations;
+using Storage.Mappings;
+using TopicCheck;
+
+namespace NetCoreMQTTExampleIdentityConfig
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Reflection;
-    using System.Security.Authentication;
-    using System.Security.Cryptography.X509Certificates;
-
-    using AutoMapper;
-
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-    using MQTTnet.AspNetCore;
-    using MQTTnet.Protocol;
-
-    using Newtonsoft.Json;
-
-    using Storage;
-    using Storage.Database;
-    using Storage.Enumerations;
-    using Storage.Mappings;
-
-    using TopicCheck;
-
     /// <summary>
     ///     The startup class.
     /// </summary>
@@ -42,7 +37,7 @@
         /// <summary>
         ///     The database context.
         /// </summary>
-        private static MqttContext databaseContext;
+        private static MqttContext _databaseContext;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Startup" /> class.
@@ -50,7 +45,7 @@
         /// <param name="configuration">The configuration.</param>
         public Startup(IConfiguration configuration)
         {
-            this.Configuration = configuration;
+            Configuration = configuration;
         }
 
         /// <summary>
@@ -63,16 +58,13 @@
         /// </summary>
         /// <param name="app">The application.</param>
         /// <param name="env">The env.</param>
+        // ReSharper disable once UnusedMember.Global
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.EnvironmentName == Environments.Development)
-            {
                 app.UseDeveloperExceptionPage();
-            }
             else
-            {
                 app.UseHsts();
-            }
 
             // Use authentication.
             app.UseAuthentication();
@@ -95,19 +87,19 @@
         public void ConfigureServices(IServiceCollection services)
         {
             // Added the custom configuration options
-            services.Configure<DatabaseConnectionSettings>(this.Configuration.GetSection("DatabaseConnectionSettings"));
-            services.Configure<MqttSettings>(this.Configuration.GetSection("MqttSettings"));
+            services.Configure<DatabaseConnectionSettings>(Configuration.GetSection("DatabaseConnectionSettings"));
+            services.Configure<MqttSettings>(Configuration.GetSection("MqttSettings"));
 
             // Load database connection settings
             var databaseConnection =
-                this.Configuration.GetSection("DatabaseConnectionSettings").Get<DatabaseConnectionSettings>()
+                Configuration.GetSection("DatabaseConnectionSettings").Get<DatabaseConnectionSettings>()
                 ?? new DatabaseConnectionSettings();
 
             // Load MQTT configuration settings
-            var mqttSettings = this.Configuration.GetSection("MqttSettings").Get<MqttSettings>();
+            var mqttSettings = Configuration.GetSection("MqttSettings").Get<MqttSettings>();
 
             // Configure database context
-            databaseContext = new MqttContext(databaseConnection);
+            _databaseContext = new MqttContext(databaseConnection);
 
             // Added the identity stuff and the database connection
             services.AddDbContext<MqttContext>(options => options.UseNpgsql(databaseConnection.ToConnectionString()));
@@ -155,7 +147,7 @@
                     .WithEncryptionSslProtocol(SslProtocols.Tls12).WithConnectionValidator(
                         c =>
                         {
-                            var currentUser = databaseContext.Users.FirstOrDefault(u => u.UserName == c.Username);
+                            var currentUser = _databaseContext.Users.FirstOrDefault(u => u.UserName == c.Username);
 
                             if (currentUser == null)
                             {
@@ -223,7 +215,7 @@
                             var topic = c.TopicFilter.Topic;
 
                             // Get blacklist
-                            var subscriptionBlackList = databaseContext.UserClaims.FirstOrDefault(
+                            var subscriptionBlackList = _databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.SubscriptionBlacklist.ToString());
 
@@ -232,7 +224,7 @@
                                 ?? new List<string>();
 
                             // Get whitelist
-                            var subscriptionWhitelist = databaseContext.UserClaims.FirstOrDefault(
+                            var subscriptionWhitelist = _databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.SubscriptionWhitelist.ToString());
 
@@ -253,25 +245,21 @@
                                 return;
                             }
 
+                            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                             foreach (var forbiddenTopic in blacklist)
                             {
                                 var doesTopicMatch = TopicChecker.Regex(forbiddenTopic, topic);
-                                if (!doesTopicMatch)
-                                {
-                                    continue;
-                                }
+                                if (!doesTopicMatch) continue;
 
                                 c.AcceptSubscription = false;
                                 return;
                             }
 
+                            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                             foreach (var allowedTopic in whitelist)
                             {
                                 var doesTopicMatch = TopicChecker.Regex(allowedTopic, topic);
-                                if (!doesTopicMatch)
-                                {
-                                    continue;
-                                }
+                                if (!doesTopicMatch) continue;
 
                                 c.AcceptSubscription = true;
                                 return;
@@ -305,7 +293,7 @@
                             var topic = c.ApplicationMessage.Topic;
 
                             // Get blacklist
-                            var subscriptionBlackList = databaseContext.UserClaims.FirstOrDefault(
+                            var subscriptionBlackList = _databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.PublishBlacklist.ToString());
 
@@ -314,7 +302,7 @@
                                 ?? new List<string>();
 
                             // Get whitelist
-                            var subscriptionWhitelist = databaseContext.UserClaims.FirstOrDefault(
+                            var subscriptionWhitelist = _databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.PublishWhitelist.ToString());
 
@@ -335,25 +323,21 @@
                                 return;
                             }
 
+                            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                             foreach (var forbiddenTopic in blacklist)
                             {
                                 var doesTopicMatch = TopicChecker.Regex(forbiddenTopic, topic);
-                                if (!doesTopicMatch)
-                                {
-                                    continue;
-                                }
+                                if (!doesTopicMatch) continue;
 
                                 c.AcceptPublish = false;
                                 return;
                             }
 
+                            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                             foreach (var allowedTopic in whitelist)
                             {
                                 var doesTopicMatch = TopicChecker.Regex(allowedTopic, topic);
-                                if (!doesTopicMatch)
-                                {
-                                    continue;
-                                }
+                                if (!doesTopicMatch) continue;
 
                                 c.AcceptPublish = true;
                                 return;
@@ -376,15 +360,11 @@
         private static string GetClientIdPrefix(string clientId)
         {
             var clientIdPrefixes =
-                databaseContext.Users.Where(u => u.ClientIdPrefix != null).Select(u => u.ClientIdPrefix);
+                _databaseContext.Users.Where(u => u.ClientIdPrefix != null).Select(u => u.ClientIdPrefix);
 
             foreach (var clientIdPrefix in clientIdPrefixes)
-            {
                 if (clientId.StartsWith(clientIdPrefix))
-                {
                     return clientIdPrefix;
-                }
-            }
 
             return null;
         }

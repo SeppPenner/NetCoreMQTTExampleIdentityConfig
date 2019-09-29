@@ -1,29 +1,24 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NetCoreMQTTExampleIdentityConfig.Controllers.Extensions;
+using Newtonsoft.Json;
+using NSwag.Annotations;
+using Serilog;
+using Storage;
+using Storage.Database;
+using Storage.Dto;
+
 namespace NetCoreMQTTExampleIdentityConfig.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
-    using AutoMapper;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
-    using NetCoreMQTTExampleIdentityConfig.Controllers.Extensions;
-
-    using Newtonsoft.Json;
-
-    using NSwag.Annotations;
-
-    using Serilog;
-    using Storage;
-    using Storage.Database;
-    using Storage.Dto;
-
     /// <summary>
-    /// The claim controller class.
+    ///     The claim controller class.
     /// </summary>
     /// <seealso cref="ControllerBase" />
     [Route("api/claim")]
@@ -32,38 +27,44 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
     public class ClaimController : ControllerBase
     {
         /// <summary>
-        /// The database context.
+        ///     The auto mapper.
         /// </summary>
-        private readonly MqttContext databaseContext;
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
+            Justification = "Reviewed. Suppression is OK here.")]
+        private readonly IMapper _autoMapper;
 
         /// <summary>
-        /// The automapper.
+        ///     The database context.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
-        private readonly IMapper autoMapper;
+        private readonly MqttContext _databaseContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClaimController"/> class.
+        ///     Initializes a new instance of the <see cref="ClaimController" /> class.
         /// </summary>
         /// <param name="databaseContext">The database context.</param>
-        /// <param name="autoMapper">The automapper service.</param>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
+        /// <param name="autoMapper">The auto mapper service.</param>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
+            Justification = "Reviewed. Suppression is OK here.")]
         public ClaimController(MqttContext databaseContext, IMapper autoMapper)
         {
-            this.databaseContext = databaseContext;
-            this.autoMapper = autoMapper;
+            _databaseContext = databaseContext;
+            _autoMapper = autoMapper;
         }
 
         /// <summary>
-        /// Gets the claims. GET "api/claim".
+        ///     Gets all claims.
         /// </summary>
         /// <returns>
-        /// The <see cref="Task"/>.
+        ///     A <see cref="Task" /> representing any asynchronous operation.
         /// </returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
+        /// <remarks>
+        ///     Gets all claims.
+        /// </remarks>
+        /// <response code="200">Claims found.</response>
+        /// <response code="500">Internal server error.</response>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
+            Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<DtoReadUserClaim>), Description = "Claims found.")]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(IEnumerable<DtoReadUserClaim>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<DtoReadUserClaim>>> GetClaims()
@@ -72,15 +73,12 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 Log.Information("Executed GetClaims().");
 
-                var claims = await this.databaseContext.UserClaims.ToListAsync();
+                var claims = await _databaseContext.UserClaims.ToListAsync();
 
-                if (claims?.Count == 0)
-                {
-                    return this.Ok("[]");
-                }
+                if (claims?.Count == 0) return Ok("[]");
 
-                var returnUserClaims = this.autoMapper.Map<List<DtoReadUserClaim>>(claims);
-                return this.Ok(returnUserClaims);
+                var returnUserClaims = _autoMapper.Map<List<DtoReadUserClaim>>(claims);
+                return Ok(returnUserClaims);
             }
             catch (Exception ex)
             {
@@ -90,19 +88,23 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         }
 
         /// <summary>
-        /// Gets the claim by id. GET "api/claim/5".
+        ///     Gets a claim by its id.
         /// </summary>
         /// <param name="claimId">
-        /// The claim identifier.
+        ///     The claim identifier.
         /// </param>
         /// <returns>
-        /// The <see cref="Task"/>.
+        ///     A <see cref="Task" /> representing any asynchronous operation.
         /// </returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
-        [HttpGet("{claimId}")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(DtoReadUserClaim), Description = "Claim found.")]
-        [SwaggerResponse(HttpStatusCode.NotFound, typeof(int), Description = "Claim not found.")]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
+        /// <remarks>
+        ///     Gets a claim by its id.
+        /// </remarks>
+        /// <response code="200">Claims found.</response>
+        /// <response code="404">Claim not found.</response>
+        /// <response code="500">Internal server error.</response>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
+            Justification = "Reviewed. Suppression is OK here.")]
+        [HttpGet("{claimId:long}")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -112,16 +114,16 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 Log.Information($"Executed GetClaimById({claimId}).");
 
-                var claim = await this.databaseContext.UserClaims.FirstOrDefaultAsync(u => u.Id == claimId);
+                var claim = await _databaseContext.UserClaims.FirstOrDefaultAsync(u => u.Id == claimId);
 
                 if (claim == null)
                 {
                     Log.Warning($"Claim with identifier {claimId} not found.");
-                    return this.NotFound(claimId);
+                    return NotFound(claimId);
                 }
 
-                var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(claim);
-                return this.Ok(returnUserClaim);
+                var returnUserClaim = _autoMapper.Map<DtoReadUserClaim>(claim);
+                return Ok(returnUserClaim);
             }
             catch (Exception ex)
             {
@@ -131,18 +133,22 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         }
 
         /// <summary>
-        /// Creates the claim. POST "api/claim".
+        ///     Creates or updates a claim.
         /// </summary>
         /// <param name="createUserClaim">
-        /// The create User Claim.
+        ///     The create user claim.
         /// </param>
         /// <returns>
-        /// The <see cref="Task"/>.
+        ///     A <see cref="Task" /> representing any asynchronous operation.
         /// </returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
+        /// <remarks>
+        ///     Creates or updates a claim.
+        /// </remarks>
+        /// <response code="200">Claim created.</response>
+        /// <response code="500">Internal server error.</response>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
+            Justification = "Reviewed. Suppression is OK here.")]
         [HttpPost]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(DtoReadUserClaim), Description = "Claim created.")]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> CreateOrUpdateClaim([FromBody] DtoCreateUpdateUserClaim createUserClaim)
@@ -151,10 +157,10 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 Log.Information($"Executed CreateOrUpdateClaim({createUserClaim}).");
 
-                var claim = this.autoMapper.Map<UserClaim>(createUserClaim);
+                var claim = _autoMapper.Map<UserClaim>(createUserClaim);
                 claim.CreatedAt = DateTimeOffset.Now;
 
-                var foundClaim = await this.databaseContext.UserClaims.FirstOrDefaultAsync(
+                var foundClaim = await _databaseContext.UserClaims.FirstOrDefaultAsync(
                     uc => uc.ClaimType == claim.ClaimType && uc.UserId == claim.UserId);
 
                 DtoReadUserClaim returnUserClaim;
@@ -162,9 +168,9 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                 if (foundClaim == null)
                 {
                     claim.CreatedAt = DateTimeOffset.Now;
-                    await this.databaseContext.UserClaims.AddAsync(claim);
-                    await this.databaseContext.SaveChangesAsync();
-                    returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(claim);
+                    await _databaseContext.UserClaims.AddAsync(claim);
+                    await _databaseContext.SaveChangesAsync();
+                    returnUserClaim = _autoMapper.Map<DtoReadUserClaim>(claim);
                 }
                 else
                 {
@@ -172,12 +178,12 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                     var currentClaimValue = JsonConvert.DeserializeObject<List<string>>(foundClaim.ClaimValue);
                     currentClaimValue.AddRange(createUserClaim.ClaimValues);
                     foundClaim.ClaimValue = JsonConvert.SerializeObject(currentClaimValue.Distinct());
-                    this.databaseContext.UserClaims.Update(foundClaim);
-                    await this.databaseContext.SaveChangesAsync();
-                    returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(foundClaim);
+                    _databaseContext.UserClaims.Update(foundClaim);
+                    await _databaseContext.SaveChangesAsync();
+                    returnUserClaim = _autoMapper.Map<DtoReadUserClaim>(foundClaim);
                 }
 
-                return this.Ok(returnUserClaim);
+                return Ok(returnUserClaim);
             }
             catch (Exception ex)
             {
@@ -187,22 +193,26 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         }
 
         /// <summary>
-        /// Updates the claim. PUT "api/claim/5".
+        ///     Updates a claim.
         /// </summary>
         /// <param name="claimId">
-        /// The claim identifier.
+        ///     The claim identifier.
         /// </param>
         /// <param name="updateUserClaim">
-        /// The update User Claim.
+        ///     The update user claim.
         /// </param>
         /// <returns>
-        /// The <see cref="Task"/>.
+        ///     A <see cref="Task" /> representing any asynchronous operation.
         /// </returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
-        [HttpPut("{claimId}")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(DtoReadUserClaim), Description = "Claim updated.")]
-        [SwaggerResponse(HttpStatusCode.NotFound, typeof(int), Description = "Claim not found.")]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
+        /// <remarks>
+        ///     Updates a claim.
+        /// </remarks>
+        /// <response code="200">Claim updated.</response>
+        /// <response code="404">Claim not found.</response>
+        /// <response code="500">Internal server error.</response>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
+            Justification = "Reviewed. Suppression is OK here.")]
+        [HttpPut("{claimId:long}")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
@@ -212,23 +222,24 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 Log.Information($"Executed UpdateClaim({updateUserClaim}) for claim identifier: {claimId}.");
 
-                var resultClaim = await this.databaseContext.UserClaims.AsNoTracking().FirstOrDefaultAsync(b => b.Id == claimId);
+                var resultClaim = await _databaseContext.UserClaims.AsNoTracking()
+                    .FirstOrDefaultAsync(b => b.Id == claimId);
 
                 if (resultClaim == null)
                 {
                     Log.Warning($"Claim with identifier {claimId} not found.");
-                    return this.NotFound(claimId);
+                    return NotFound(claimId);
                 }
 
                 var createdAt = resultClaim.CreatedAt;
-                resultClaim = this.autoMapper.Map<UserClaim>(updateUserClaim);
+                resultClaim = _autoMapper.Map<UserClaim>(updateUserClaim);
                 resultClaim.UpdatedAt = DateTimeOffset.Now;
                 resultClaim.CreatedAt = createdAt;
                 resultClaim.Id = claimId;
-                this.databaseContext.UserClaims.Update(resultClaim);
-                await this.databaseContext.SaveChangesAsync();
-                var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(resultClaim);
-                return this.Ok(returnUserClaim);
+                _databaseContext.UserClaims.Update(resultClaim);
+                await _databaseContext.SaveChangesAsync();
+                var returnUserClaim = _autoMapper.Map<DtoReadUserClaim>(resultClaim);
+                return Ok(returnUserClaim);
             }
             catch (Exception ex)
             {
@@ -238,18 +249,22 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         }
 
         /// <summary>
-        /// Deletes the claim by id. DELETE "api/claim/5".
+        ///     Deletes a claim by its id.
         /// </summary>
         /// <param name="claimId">
-        /// The claim identifier.
+        ///     The claim identifier.
         /// </param>
         /// <returns>
-        /// The <see cref="Task"/>.
+        ///     A <see cref="Task" /> representing any asynchronous operation.
         /// </returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
-        [HttpDelete("{claimId}")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(int), Description = "Claim deleted.")]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, typeof(string), Description = "Internal server error.")]
+        /// <remarks>
+        ///     Deletes a claim by its id.
+        /// </remarks>
+        /// <response code="200">Claim deleted.</response>
+        /// <response code="500">Internal server error.</response>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
+            Justification = "Reviewed. Suppression is OK here.")]
+        [HttpDelete("{claimId:long}")]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteClaimById(long claimId)
@@ -258,16 +273,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 Log.Information($"Executed DeleteClaimById({claimId}).");
 
-                var claim = await this.databaseContext.UserClaims.AsNoTracking().FirstOrDefaultAsync(c => c.Id == claimId);
+                var claim = await _databaseContext.UserClaims.AsNoTracking().FirstOrDefaultAsync(c => c.Id == claimId);
 
-                if (claim == null)
-                {
-                    return this.Ok(claimId);
-                }
+                if (claim == null) return Ok(claimId);
 
-                this.databaseContext.UserClaims.Remove(claim);
-                await this.databaseContext.SaveChangesAsync();
-                return this.Ok(claimId);
+                _databaseContext.UserClaims.Remove(claim);
+                await _databaseContext.SaveChangesAsync();
+                return Ok(claimId);
             }
             catch (Exception ex)
             {
