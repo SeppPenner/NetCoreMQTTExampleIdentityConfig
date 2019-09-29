@@ -263,5 +263,6 @@ An example certificate is in the folder. Password for all is `test`.
 Change history
 --------------
 
+* **Version 1.0.1.0 (2019-09-29)** : Updated swagger documentation and code style.
 * **Version 1.0.0.1 (2019-09-27)** : Updated nuget packages, moved to NetCore 3.0.
 * **Version 1.0.0.0 (2019-08-06)** : 1.0 release.
