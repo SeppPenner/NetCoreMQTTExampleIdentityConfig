@@ -19,6 +19,11 @@ namespace Storage.Database
         /// </summary>
         public virtual string ClientId { get; set; }
 
+        /// <summary> 
+        /// Gets or sets a value indicating whether the client id is validated or not. 
+        /// </summary> 
+        public virtual bool ValidateClientId { get; set; } = true;
+
         /// <summary>
         ///     Gets or sets the created at timestamp.
         /// </summary>

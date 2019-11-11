@@ -59,7 +59,8 @@ namespace DatabaseSetup
                 PhoneNumber = "01234567890",
                 SecurityStamp = new Guid().ToString(),
                 TwoFactorEnabled = false,
-                PhoneNumberConfirmed = true
+                PhoneNumberConfirmed = true,
+                ValidateClientId = true
             };
 
             context.Users.Add(user);

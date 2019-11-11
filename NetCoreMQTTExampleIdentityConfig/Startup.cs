@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +16,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MQTTnet.AspNetCore;
 using MQTTnet.Protocol;
+using MQTTnet.Server;
 using Newtonsoft.Json;
+using Serilog;
 using Storage;
 using Storage.Database;
 using Storage.Enumerations;
@@ -152,12 +155,14 @@ namespace NetCoreMQTTExampleIdentityConfig
                             if (currentUser == null)
                             {
                                 c.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
+                                LogMessage(c, true);
                                 return;
                             }
 
                             if (c.Username != currentUser.UserName)
                             {
                                 c.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
+                                LogMessage(c, true);
                                 return;
                             }
 
@@ -169,6 +174,14 @@ namespace NetCoreMQTTExampleIdentityConfig
                             if (hashingResult == PasswordVerificationResult.Failed)
                             {
                                 c.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
+                                LogMessage(c, true);
+                                return;
+                            }
+
+                            if (!currentUser.ValidateClientId)
+                            {
+                                c.ReasonCode = MqttConnectReasonCode.Success;
+                                c.SessionItems.Add(c.ClientId, currentUser);
                                 return;
                             }
 
@@ -177,6 +190,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                                 if (c.ClientId != currentUser.ClientId)
                                 {
                                     c.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
+                                    LogMessage(c, true);
                                     return;
                                 }
 
@@ -188,6 +202,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                             }
 
                             c.ReasonCode = MqttConnectReasonCode.Success;
+                            LogMessage(c, false);
                         }).WithSubscriptionInterceptor(
                         c =>
                         {
@@ -195,7 +210,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                             User currentUser;
                             bool userFound;
 
-                            if (clientIdPrefix == null)
+                            if (string.IsNullOrWhiteSpace(clientIdPrefix))
                             {
                                 userFound = c.SessionItems.TryGetValue(c.ClientId, out var currentUserObject);
                                 currentUser = currentUserObject as User;
@@ -209,6 +224,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                             if (!userFound || currentUser == null)
                             {
                                 c.AcceptSubscription = false;
+                                LogMessage(c, false);
                                 return;
                             }
 
@@ -236,12 +252,14 @@ namespace NetCoreMQTTExampleIdentityConfig
                             if (blacklist.Contains(topic))
                             {
                                 c.AcceptSubscription = false;
+                                LogMessage(c, false);
                                 return;
                             }
 
                             if (whitelist.Contains(topic))
                             {
                                 c.AcceptSubscription = true;
+                                LogMessage(c, true);
                                 return;
                             }
 
@@ -252,6 +270,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                                 if (!doesTopicMatch) continue;
 
                                 c.AcceptSubscription = false;
+                                LogMessage(c, false);
                                 return;
                             }
 
@@ -262,10 +281,12 @@ namespace NetCoreMQTTExampleIdentityConfig
                                 if (!doesTopicMatch) continue;
 
                                 c.AcceptSubscription = true;
+                                LogMessage(c, true);
                                 return;
                             }
 
                             c.AcceptSubscription = false;
+                            LogMessage(c, false);
                         }).WithApplicationMessageInterceptor(
                         c =>
                         {
@@ -273,7 +294,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                             User currentUser;
                             bool userFound;
 
-                            if (clientIdPrefix == null)
+                            if (string.IsNullOrWhiteSpace(clientIdPrefix))
                             {
                                 userFound = c.SessionItems.TryGetValue(c.ClientId, out var currentUserObject);
                                 currentUser = currentUserObject as User;
@@ -320,6 +341,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                             if (whitelist.Contains(topic))
                             {
                                 c.AcceptPublish = true;
+                                LogMessage(c);
                                 return;
                             }
 
@@ -340,6 +362,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                                 if (!doesTopicMatch) continue;
 
                                 c.AcceptPublish = true;
+                                LogMessage(c);
                                 return;
                             }
 
@@ -367,6 +390,50 @@ namespace NetCoreMQTTExampleIdentityConfig
                     return clientIdPrefix;
 
             return null;
+        }
+
+        /// <summary> 
+        ///     Logs the message from the MQTT subscription interceptor context. 
+        /// </summary> 
+        /// <param name="context">The MQTT subscription interceptor context.</param> 
+        /// <param name="successful">A <see cref="bool"/> value indicating whether the subscription was successful or not.</param> 
+        private static void LogMessage(MqttSubscriptionInterceptorContext context, bool successful)
+        {
+            Log.Information(successful ? $"New subscription: ClientId = {context.ClientId}, TopicFilter = {context.TopicFilter}" : $"Subscription failed for clientId = {context.ClientId}, TopicFilter = {context.TopicFilter}");
+        }
+
+        /// <summary>
+        ///     Logs the message from the MQTT message interceptor context.
+        /// </summary>
+        /// <param name="context">The MQTT message interceptor context.</param>
+        private static void LogMessage(MqttApplicationMessageInterceptorContext context)
+        {
+            Log.Information(
+                $"Message: ClientId = {context.ClientId}, Topic = {context.ApplicationMessage.Topic},"
+                + $" Payload = {Encoding.UTF8.GetString(context.ApplicationMessage.Payload)}, QoS = {context.ApplicationMessage.QualityOfServiceLevel},"
+                + $" Retain-Flag = {context.ApplicationMessage.Retain}");
+        }
+
+        /// <summary> 
+        ///     Logs the message from the MQTT connection validation context. 
+        /// </summary> 
+        /// <param name="context">The MQTT connection validation context.</param> 
+        /// <param name="showPassword">A <see cref="bool"/> value indicating whether the password is written to the log or not.</param> 
+        private static void LogMessage(MqttConnectionValidatorContext context, bool showPassword)
+        {
+            if (showPassword)
+            {
+                Log.Information(
+                    $"New connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint},"
+                    + $" Username = {context.Username}, Password = {context.Password},"
+                    + $" CleanSession = {context.CleanSession}");
+            }
+            else
+            {
+                Log.Information(
+                    $"New connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint},"
+                    + $" Username = {context.Username}, CleanSession = {context.CleanSession}");
+            }
         }
     }
 }

@@ -15,49 +15,6 @@ The project was written and tested in .NetCore 3.0.
 ## How to use this project:
 1. Create your users and intial setup using the `DatabaseSetup` project or using the API.
 
-## JSON configuration (Adjust this to your needs):
-
-Users can be defined in two different ways (The ways can be combined making sure that the client ids and client id prefixes need to be distinct for all of them, of course):
-
-### Various definition (Matching multiple client ids for one username and password combination):
-
-```json
-{
-  "Port": 8883,
-  "Users": [
-    {
-      "UserName": "Hans2",
-      "Password": "AQAAAAEAACcQAAAAECcnkwU+LImyVorjCCNzpTGgYOjVxFd+i/PW3MyU2sws80uPkPrppb+AXnvaxVI/0Q==",
-      "ClientIdPrefix": "Test_",
-      "SubscriptionTopicLists": {
-        "BlacklistTopics": [
-          "g",
-          "h/+",
-          "i/#"
-        ],
-        "WhitelistTopics": [
-          "j",
-          "k/+",
-          "l/#"
-        ]
-      },
-      "PublishTopicLists": {
-        "BlacklistTopics": [
-          "g",
-          "h/+",
-          "i/#"
-        ],
-        "WhitelistTopics": [
-          "j",
-          "k/+",
-          "l/#"
-        ]
-      }
-    }
-  ]
-}
-```
-
 ## Attention:
 * Only the following [UTF-8](https://www.utf8-chartable.de/unicode-utf8-table.pl) chars are supported for topics:
 
@@ -263,6 +220,7 @@ An example certificate is in the folder. Password for all is `test`.
 Change history
 --------------
 
+* **Version 1.0.2.0 (2019-11-11)** : Added possibility to use all client ids with one user, added better logging.
 * **Version 1.0.1.0 (2019-09-29)** : Updated swagger documentation and code style.
 * **Version 1.0.0.1 (2019-09-27)** : Updated nuget packages, moved to NetCore 3.0.
 * **Version 1.0.0.0 (2019-08-06)** : 1.0 release.
