@@ -182,7 +182,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                             {
                                 c.ReasonCode = MqttConnectReasonCode.Success;
                                 c.SessionItems.Add(c.ClientId, currentUser);
-								LogMessage(c, false);
+                                LogMessage(c, false);
                                 return;
                             }
 
