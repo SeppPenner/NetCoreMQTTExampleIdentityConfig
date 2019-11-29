@@ -21,8 +21,8 @@ namespace NetCoreMQTTExampleIdentityConfig
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.RollingFile(Path.Combine(currentLocation,
-                    @"..\log\NetCoreMQTTExampleIdentityConfig_{Date}.txt"))
+                .WriteTo.File(Path.Combine(currentLocation,
+                    @"log\NetCoreMQTTExampleIdentityConfig_.txt"), rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
             CreateWebHostBuilder(args).Build().Run();
