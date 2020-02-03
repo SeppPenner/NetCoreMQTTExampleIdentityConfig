@@ -35,13 +35,23 @@ namespace Storage.Database
         public virtual DateTimeOffset? UpdatedAt { get; set; } = null;
 
         /// <summary>
+        /// Gets or sets a value indicating whether the user is throttled after a certain limit or not.
+        /// </summary>
+        public virtual bool ThrottleUser { get; set; }
+
+        /// <summary>
+        /// Gets or sets a user's monthly limit in byte.
+        /// </summary>
+        public virtual long MonthlyByteLimit { get; set; }
+
+        /// <summary>
         ///     Returns a <seealso cref="string" /> which represents the object instance.
         /// </summary>
         /// <returns>A <seealso cref="string" /> representation of the instance.</returns>
         public override string ToString()
         {
             return
-                $"{base.ToString()}, {nameof(ClientIdPrefix)}: {ClientIdPrefix}, {nameof(ClientId)}: {ClientId}, {nameof(CreatedAt)}: {CreatedAt}, {nameof(UpdatedAt)}: {UpdatedAt}";
+                $"{base.ToString()}, {nameof(ClientIdPrefix)}: {ClientIdPrefix}, {nameof(ClientId)}: {ClientId}, {nameof(CreatedAt)}: {CreatedAt}, {nameof(UpdatedAt)}: {UpdatedAt}, {nameof(ThrottleUser)}: {ThrottleUser}, {nameof(MonthlyByteLimit)}: {MonthlyByteLimit}";
         }
     }
 }

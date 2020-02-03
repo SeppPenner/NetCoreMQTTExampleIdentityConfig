@@ -41,7 +41,7 @@ namespace DatabaseSetup
         /// <param name="context">The <see cref="MqttContext" /> to use.</param>
         private static void SeedData(MqttContext context)
         {
-            var version = new DbVersion {Version = "1.0.0.0", VersionName = "Sicario", CreatedAt = DateTimeOffset.Now};
+            var version = new DbVersion { Version = "1.0.0.0", VersionName = "Sicario", CreatedAt = DateTimeOffset.Now };
             context.DbVersions.Add(version);
             context.SaveChanges();
 
@@ -60,7 +60,9 @@ namespace DatabaseSetup
                 SecurityStamp = new Guid().ToString(),
                 TwoFactorEnabled = false,
                 PhoneNumberConfirmed = true,
-                ValidateClientId = true
+                ValidateClientId = true,
+                ThrottleUser = true,
+                MonthlyByteLimit = 10000
             };
 
             context.Users.Add(user);
@@ -72,7 +74,7 @@ namespace DatabaseSetup
             context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "SubscriptionBlacklist",
-                ClaimValue = JsonConvert.SerializeObject(new List<string> {"a", "b/+", "c/#"}),
+                ClaimValue = JsonConvert.SerializeObject(new List<string> { "a", "b/+", "c/#" }),
                 UserId = 1,
                 CreatedAt = DateTimeOffset.Now
             });
@@ -80,7 +82,7 @@ namespace DatabaseSetup
             context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "SubscriptionWhitelist",
-                ClaimValue = JsonConvert.SerializeObject(new List<string> {"d", "e/+", "f/#"}),
+                ClaimValue = JsonConvert.SerializeObject(new List<string> { "d", "e/+", "f/#" }),
                 UserId = 1,
                 CreatedAt = DateTimeOffset.Now
             });
@@ -88,7 +90,7 @@ namespace DatabaseSetup
             context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "PublishBlacklist",
-                ClaimValue = JsonConvert.SerializeObject(new List<string> {"a", "b/+", "c/#"}),
+                ClaimValue = JsonConvert.SerializeObject(new List<string> { "a", "b/+", "c/#" }),
                 UserId = 1,
                 CreatedAt = DateTimeOffset.Now
             });
@@ -96,7 +98,7 @@ namespace DatabaseSetup
             context.UserClaims.Add(new UserClaim
             {
                 ClaimType = "PublishWhitelist",
-                ClaimValue = JsonConvert.SerializeObject(new List<string> {"d", "e/+", "f/#"}),
+                ClaimValue = JsonConvert.SerializeObject(new List<string> { "d", "e/+", "f/#" }),
                 UserId = 1,
                 CreatedAt = DateTimeOffset.Now
             });

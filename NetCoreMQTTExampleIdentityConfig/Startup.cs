@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Caching;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+
 using AutoMapper;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -14,15 +18,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using MQTTnet.AspNetCore;
 using MQTTnet.Protocol;
 using MQTTnet.Server;
+
 using Newtonsoft.Json;
+
 using Serilog;
+
 using Storage;
 using Storage.Database;
 using Storage.Enumerations;
 using Storage.Mappings;
+
 using TopicCheck;
 
 namespace NetCoreMQTTExampleIdentityConfig
@@ -36,6 +45,11 @@ namespace NetCoreMQTTExampleIdentityConfig
         ///     The <see cref="PasswordHasher{TUser}" />.
         /// </summary>
         private static readonly PasswordHasher<User> Hasher = new PasswordHasher<User>();
+
+        /// <summary>
+        /// Gets or sets the data limit cache for throttling for monthly data.
+        /// </summary>
+        private static readonly MemoryCache DataLimitCacheMonth = MemoryCache.Default;
 
         /// <summary>
         ///     The database context.
@@ -314,6 +328,20 @@ namespace NetCoreMQTTExampleIdentityConfig
 
                             var topic = c.ApplicationMessage.Topic;
 
+                            if (currentUser.ThrottleUser)
+                            {
+                                var payload = c.ApplicationMessage?.Payload;
+
+                                if (payload != null)
+                                {
+                                    if (IsUserThrottled(c.ClientId, payload.Length, currentUser.MonthlyByteLimit))
+                                    {
+                                        c.AcceptPublish = false;
+                                        return;
+                                    }
+                                }
+                            }
+
                             // Get blacklist
                             var subscriptionBlackList = _databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
@@ -435,6 +463,52 @@ namespace NetCoreMQTTExampleIdentityConfig
                     $"New connection: ClientId = {context.ClientId}, Endpoint = {context.Endpoint},"
                     + $" Username = {context.Username}, CleanSession = {context.CleanSession}");
             }
+        }
+
+        /// <summary>
+        /// Checks whether a user has used the maximum of its publishing limit for the month or not.
+        /// </summary>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="sizeInBytes">The message size in bytes.</param>
+        /// <param name="monthlyByteLimit">The monthly byte limit.</param>
+        /// <returns>A value indicating whether the user will be throttled or not.</returns>
+        private static bool IsUserThrottled(string clientId, long sizeInBytes, long monthlyByteLimit)
+        {
+            var foundUserInCache = DataLimitCacheMonth.GetCacheItem(clientId);
+
+            if (foundUserInCache == null)
+            {
+                DataLimitCacheMonth.Add(clientId, sizeInBytes, DateTimeOffset.Now.EndOfCurrentMonth());
+
+                if (sizeInBytes < monthlyByteLimit)
+                {
+                    return false;
+                }
+
+                Log.Information($"The client with client id {clientId} is now locked until the end of this month because it already used its data limit.");
+                return true;
+            }
+
+            try
+            {
+                var currentValue = Convert.ToInt64(foundUserInCache.Value);
+                currentValue = checked(currentValue + sizeInBytes);
+                DataLimitCacheMonth[clientId] = currentValue;
+
+                if (currentValue >= monthlyByteLimit)
+                {
+                    Log.Information($"The client with client id {clientId} is now locked until the end of this month because it already used its data limit.");
+                    return true;
+                }
+            }
+            catch (OverflowException)
+            {
+                Log.Information("OverflowException thrown.");
+                Log.Information($"The client with client id {clientId} is now locked until the end of this month because it already used its data limit.");
+                return true;
+            }
+
+            return false;
         }
     }
 }

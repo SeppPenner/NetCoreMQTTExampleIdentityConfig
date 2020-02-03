@@ -263,6 +263,30 @@
             <response code="200">User deleted.</response>
             <response code="500">Internal server error.</response>
         </member>
+        <member name="T:NetCoreMQTTExampleIdentityConfig.DateTimeExtensions">
+            <summary>
+            A class that contains extension method for the <see cref="T:System.DateTime"/> data type.
+            </summary>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.DateTimeExtensions.GetTimeZoneOffset(System.DateTime)">
+            <summary>
+            Gets the time zone offset of the local time zone.
+            </summary>
+            <param name="date">The date to get the time zone offset from.</param>
+            <returns>The time zone offset of the local time zone</returns>
+        </member>
+        <member name="T:NetCoreMQTTExampleIdentityConfig.DateTimeOffsetExtensions">
+            <summary>
+            A class that contains extension method for the <see cref="T:System.DateTimeOffset"/> data type.
+            </summary>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.DateTimeOffsetExtensions.EndOfCurrentMonth(System.DateTimeOffset)">
+            <summary>
+            Gets the end of the current month.
+            </summary>
+            <param name="date">The date to get the current month end from.</param>
+            <returns>A new <see cref="T:System.DateTimeOffset"/> that represents the end of the current month.</returns>
+        </member>
         <member name="T:NetCoreMQTTExampleIdentityConfig.Program">
             <summary>
                 The main program class.
@@ -289,6 +313,11 @@
         <member name="F:NetCoreMQTTExampleIdentityConfig.Startup.Hasher">
             <summary>
                 The <see cref="T:Microsoft.AspNetCore.Identity.PasswordHasher`1" />.
+            </summary>
+        </member>
+        <member name="F:NetCoreMQTTExampleIdentityConfig.Startup.DataLimitCacheMonth">
+            <summary>
+            Gets or sets the data limit cache for throttling for monthly data.
             </summary>
         </member>
         <member name="F:NetCoreMQTTExampleIdentityConfig.Startup._databaseContext">
@@ -346,6 +375,15 @@
             </summary> 
             <param name="context">The MQTT connection validation context.</param> 
             <param name="showPassword">A <see cref="T:System.Boolean"/> value indicating whether the password is written to the log or not.</param> 
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.Startup.IsUserThrottled(System.String,System.Int64,System.Int64)">
+            <summary>
+            Checks whether a user has used the maximum of its publishing limit for the month or not.
+            </summary>
+            <param name="clientId">The client identifier.</param>
+            <param name="sizeInBytes">The message size in bytes.</param>
+            <param name="monthlyByteLimit">The monthly byte limit.</param>
+            <returns>A value indicating whether the user will be throttled or not.</returns>
         </member>
     </members>
 </doc>
