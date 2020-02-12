@@ -22,7 +22,7 @@ namespace Storage.Database
         /// <summary> 
         /// Gets or sets a value indicating whether the client id is validated or not. 
         /// </summary> 
-        public virtual bool ValidateClientId { get; set; } = true;
+        public virtual bool ValidateClientId { get; set; }
 
         /// <summary>
         ///     Gets or sets the created at timestamp.
@@ -42,7 +42,7 @@ namespace Storage.Database
         /// <summary>
         /// Gets or sets a user's monthly limit in byte.
         /// </summary>
-        public virtual long MonthlyByteLimit { get; set; }
+        public virtual long? MonthlyByteLimit { get; set; }
 
         /// <summary>
         ///     Returns a <seealso cref="string" /> which represents the object instance.

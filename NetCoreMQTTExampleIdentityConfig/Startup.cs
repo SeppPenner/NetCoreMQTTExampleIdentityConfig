@@ -334,10 +334,13 @@ namespace NetCoreMQTTExampleIdentityConfig
 
                                 if (payload != null)
                                 {
-                                    if (IsUserThrottled(c.ClientId, payload.Length, currentUser.MonthlyByteLimit))
+                                    if (currentUser.MonthlyByteLimit != null)
                                     {
-                                        c.AcceptPublish = false;
-                                        return;
+                                        if (IsUserThrottled(c.ClientId, payload.Length, currentUser.MonthlyByteLimit.Value))
+                                        {
+                                            c.AcceptPublish = false;
+                                            return;
+                                        }
                                     }
                                 }
                             }
