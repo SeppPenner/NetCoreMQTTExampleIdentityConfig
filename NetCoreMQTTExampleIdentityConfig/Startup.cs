@@ -343,21 +343,21 @@ namespace NetCoreMQTTExampleIdentityConfig
                             }
 
                             // Get blacklist
-                            var subscriptionBlackList = _databaseContext.UserClaims.FirstOrDefault(
+                            var publishBlackList = _databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.PublishBlacklist.ToString());
 
                             var blacklist =
-                                JsonConvert.DeserializeObject<List<string>>(subscriptionBlackList?.ClaimValue)
+                                JsonConvert.DeserializeObject<List<string>>(publishBlackList?.ClaimValue)
                                 ?? new List<string>();
 
                             // Get whitelist
-                            var subscriptionWhitelist = _databaseContext.UserClaims.FirstOrDefault(
+                            var publishWhitelist = _databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.PublishWhitelist.ToString());
 
                             var whitelist =
-                                JsonConvert.DeserializeObject<List<string>>(subscriptionWhitelist?.ClaimValue)
+                                JsonConvert.DeserializeObject<List<string>>(publishWhitelist?.ClaimValue)
                                 ?? new List<string>();
 
                             // Check matches
