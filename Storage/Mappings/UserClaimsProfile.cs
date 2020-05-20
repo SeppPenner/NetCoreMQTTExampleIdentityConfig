@@ -1,10 +1,20 @@
-﻿using AutoMapper;
-using Storage.Converter;
-using Storage.Database;
-using Storage.Dto;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UserClaimsProfile.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   The user claims profile.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Storage.Mappings
 {
+    using AutoMapper;
+
+    using Storage.Converter;
+    using Storage.Database;
+    using Storage.Dto;
+
     /// <summary>
     ///     The user claims profile.
     /// </summary>
@@ -16,14 +26,14 @@ namespace Storage.Mappings
         /// </summary>
         public UserClaimsProfile()
         {
-            CreateMap<UserClaim, DtoReadUserClaim>().ConvertUsing(new UserClaimToDtoReadUserClaimConverter());
-            CreateMap<DtoReadUserClaim, UserClaim>().ConvertUsing(new DtoReadUserClaimToUserClaimConverter());
-            CreateMap<UserClaim, DtoCreateUpdateUserClaim>()
+            this.CreateMap<UserClaim, DtoReadUserClaim>().ConvertUsing(new UserClaimToDtoReadUserClaimConverter());
+            this.CreateMap<DtoReadUserClaim, UserClaim>().ConvertUsing(new DtoReadUserClaimToUserClaimConverter());
+            this.CreateMap<UserClaim, DtoCreateUpdateUserClaim>()
                 .ConvertUsing(new UserClaimToDtoCreateUpdateUserClaimConverter());
-            CreateMap<DtoCreateUpdateUserClaim, UserClaim>()
+            this.CreateMap<DtoCreateUpdateUserClaim, UserClaim>()
                 .ConvertUsing(new DtoCreateUpdateUserClaimToUserClaimConverter());
-            CreateMap<DtoReadUserClaim, DtoCreateUpdateUserClaim>();
-            CreateMap<DtoCreateUpdateUserClaim, DtoReadUserClaim>();
+            this.CreateMap<DtoReadUserClaim, DtoCreateUpdateUserClaim>();
+            this.CreateMap<DtoCreateUpdateUserClaim, DtoReadUserClaim>();
         }
     }
 }

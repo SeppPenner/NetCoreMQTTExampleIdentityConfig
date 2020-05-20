@@ -1,41 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Caching;
-using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-
-using AutoMapper;
-
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
-using MQTTnet.AspNetCore;
-using MQTTnet.Protocol;
-using MQTTnet.Server;
-
-using Newtonsoft.Json;
-
-using Serilog;
-
-using Storage;
-using Storage.Database;
-using Storage.Enumerations;
-using Storage.Mappings;
-
-using TopicCheck;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Startup.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   The startup class.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace NetCoreMQTTExampleIdentityConfig
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using System.Runtime.Caching;
+    using System.Security.Authentication;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Text;
+
+    using AutoMapper;
+
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+
+    using MQTTnet.AspNetCore;
+    using MQTTnet.Protocol;
+    using MQTTnet.Server;
+
+    using Newtonsoft.Json;
+
+    using Serilog;
+
+    using Storage;
+    using Storage.Database;
+    using Storage.Enumerations;
+    using Storage.Mappings;
+
+    using TopicCheck;
+
     /// <summary>
     ///     The startup class.
     /// </summary>
@@ -44,7 +53,7 @@ namespace NetCoreMQTTExampleIdentityConfig
         /// <summary>
         ///     The <see cref="PasswordHasher{TUser}" />.
         /// </summary>
-        private static readonly PasswordHasher<User> Hasher = new PasswordHasher<User>();
+        private static readonly IPasswordHasher<User> Hasher = new PasswordHasher<User>();
 
         /// <summary>
         /// Gets or sets the data limit cache for throttling for monthly data.
@@ -54,7 +63,7 @@ namespace NetCoreMQTTExampleIdentityConfig
         /// <summary>
         ///     The database context.
         /// </summary>
-        private static MqttContext _databaseContext;
+        private static MqttContext databaseContext;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Startup" /> class.
@@ -62,7 +71,7 @@ namespace NetCoreMQTTExampleIdentityConfig
         /// <param name="configuration">The configuration.</param>
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         /// <summary>
@@ -79,9 +88,13 @@ namespace NetCoreMQTTExampleIdentityConfig
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.EnvironmentName == Environments.Development)
+            {
                 app.UseDeveloperExceptionPage();
+            }
             else
+            {
                 app.UseHsts();
+            }
 
             // Use authentication.
             app.UseAuthentication();
@@ -104,19 +117,18 @@ namespace NetCoreMQTTExampleIdentityConfig
         public void ConfigureServices(IServiceCollection services)
         {
             // Added the custom configuration options
-            services.Configure<DatabaseConnectionSettings>(Configuration.GetSection("DatabaseConnectionSettings"));
-            services.Configure<MqttSettings>(Configuration.GetSection("MqttSettings"));
+            services.Configure<DatabaseConnectionSettings>(this.Configuration.GetSection("DatabaseConnectionSettings"));
+            services.Configure<MqttSettings>(this.Configuration.GetSection("MqttSettings"));
 
             // Load database connection settings
-            var databaseConnection =
-                Configuration.GetSection("DatabaseConnectionSettings").Get<DatabaseConnectionSettings>()
-                ?? new DatabaseConnectionSettings();
+            var databaseConnection = this.Configuration.GetSection("DatabaseConnectionSettings").Get<DatabaseConnectionSettings>()
+                                     ?? new DatabaseConnectionSettings();
 
             // Load MQTT configuration settings
-            var mqttSettings = Configuration.GetSection("MqttSettings").Get<MqttSettings>();
+            var mqttSettings = this.Configuration.GetSection("MqttSettings").Get<MqttSettings>();
 
             // Configure database context
-            _databaseContext = new MqttContext(databaseConnection);
+            databaseContext = new MqttContext(databaseConnection);
 
             // Added the identity stuff and the database connection
             services.AddDbContext<MqttContext>(options => options.UseNpgsql(databaseConnection.ToConnectionString()));
@@ -147,6 +159,7 @@ namespace NetCoreMQTTExampleIdentityConfig
             // Read certificate
             var currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var certificate = new X509Certificate2(
+                // ReSharper disable once AssignNullToNotNullAttribute
                 Path.Combine(currentPath, "certificate.pfx"),
                 "test",
                 X509KeyStorageFlags.Exportable);
@@ -164,7 +177,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                     .WithEncryptionSslProtocol(SslProtocols.Tls12).WithConnectionValidator(
                         c =>
                         {
-                            var currentUser = _databaseContext.Users.FirstOrDefault(u => u.UserName == c.Username);
+                            var currentUser = databaseContext.Users.FirstOrDefault(u => u.UserName == c.Username);
 
                             if (currentUser == null)
                             {
@@ -246,20 +259,22 @@ namespace NetCoreMQTTExampleIdentityConfig
                             var topic = c.TopicFilter.Topic;
 
                             // Get blacklist
-                            var subscriptionBlackList = _databaseContext.UserClaims.FirstOrDefault(
+                            var subscriptionBlackList = databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.SubscriptionBlacklist.ToString());
 
                             var blacklist =
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 JsonConvert.DeserializeObject<List<string>>(subscriptionBlackList?.ClaimValue)
                                 ?? new List<string>();
 
                             // Get whitelist
-                            var subscriptionWhitelist = _databaseContext.UserClaims.FirstOrDefault(
+                            var subscriptionWhitelist = databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.SubscriptionWhitelist.ToString());
 
                             var whitelist =
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 JsonConvert.DeserializeObject<List<string>>(subscriptionWhitelist?.ClaimValue)
                                 ?? new List<string>();
 
@@ -282,7 +297,10 @@ namespace NetCoreMQTTExampleIdentityConfig
                             foreach (var forbiddenTopic in blacklist)
                             {
                                 var doesTopicMatch = TopicChecker.Regex(forbiddenTopic, topic);
-                                if (!doesTopicMatch) continue;
+                                if (!doesTopicMatch)
+                                {
+                                    continue;
+                                }
 
                                 c.AcceptSubscription = false;
                                 LogMessage(c, false);
@@ -293,7 +311,10 @@ namespace NetCoreMQTTExampleIdentityConfig
                             foreach (var allowedTopic in whitelist)
                             {
                                 var doesTopicMatch = TopicChecker.Regex(allowedTopic, topic);
-                                if (!doesTopicMatch) continue;
+                                if (!doesTopicMatch)
+                                {
+                                    continue;
+                                }
 
                                 c.AcceptSubscription = true;
                                 LogMessage(c, true);
@@ -346,20 +367,22 @@ namespace NetCoreMQTTExampleIdentityConfig
                             }
 
                             // Get blacklist
-                            var publishBlackList = _databaseContext.UserClaims.FirstOrDefault(
+                            var publishBlackList = databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.PublishBlacklist.ToString());
 
                             var blacklist =
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 JsonConvert.DeserializeObject<List<string>>(publishBlackList?.ClaimValue)
                                 ?? new List<string>();
 
                             // Get whitelist
-                            var publishWhitelist = _databaseContext.UserClaims.FirstOrDefault(
+                            var publishWhitelist = databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.PublishWhitelist.ToString());
 
                             var whitelist =
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 JsonConvert.DeserializeObject<List<string>>(publishWhitelist?.ClaimValue)
                                 ?? new List<string>();
 
@@ -381,7 +404,10 @@ namespace NetCoreMQTTExampleIdentityConfig
                             foreach (var forbiddenTopic in blacklist)
                             {
                                 var doesTopicMatch = TopicChecker.Regex(forbiddenTopic, topic);
-                                if (!doesTopicMatch) continue;
+                                if (!doesTopicMatch)
+                                {
+                                    continue;
+                                }
 
                                 c.AcceptPublish = false;
                                 return;
@@ -391,7 +417,10 @@ namespace NetCoreMQTTExampleIdentityConfig
                             foreach (var allowedTopic in whitelist)
                             {
                                 var doesTopicMatch = TopicChecker.Regex(allowedTopic, topic);
-                                if (!doesTopicMatch) continue;
+                                if (!doesTopicMatch)
+                                {
+                                    continue;
+                                }
 
                                 c.AcceptPublish = true;
                                 LogMessage(c);
@@ -415,11 +444,15 @@ namespace NetCoreMQTTExampleIdentityConfig
         private static string GetClientIdPrefix(string clientId)
         {
             var clientIdPrefixes =
-                _databaseContext.Users.Where(u => u.ClientIdPrefix != null).Select(u => u.ClientIdPrefix);
+                databaseContext.Users.Where(u => u.ClientIdPrefix != null).Select(u => u.ClientIdPrefix);
 
             foreach (var clientIdPrefix in clientIdPrefixes)
+            {
                 if (clientId.StartsWith(clientIdPrefix))
+                {
                     return clientIdPrefix;
+                }
+            }
 
             return null;
         }
@@ -431,11 +464,11 @@ namespace NetCoreMQTTExampleIdentityConfig
         /// <param name="successful">A <see cref="bool"/> value indicating whether the subscription was successful or not.</param> 
         private static void LogMessage(MqttSubscriptionInterceptorContext context, bool successful)
         {
-			if (context == null)
+            if (context == null)
             {
                 return;
             }
-			
+
             Log.Information(successful ? $"New subscription: ClientId = {context.ClientId}, TopicFilter = {context.TopicFilter}" : $"Subscription failed for clientId = {context.ClientId}, TopicFilter = {context.TopicFilter}");
         }
 
@@ -465,11 +498,11 @@ namespace NetCoreMQTTExampleIdentityConfig
         /// <param name="showPassword">A <see cref="bool"/> value indicating whether the password is written to the log or not.</param> 
         private static void LogMessage(MqttConnectionValidatorContext context, bool showPassword)
         {
-			if (context == null)
+            if (context == null)
             {
                 return;
             }
-			
+
             if (showPassword)
             {
                 Log.Information(

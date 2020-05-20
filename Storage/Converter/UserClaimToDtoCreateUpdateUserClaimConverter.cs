@@ -1,14 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using AutoMapper;
-using Newtonsoft.Json;
-using Storage.Database;
-using Storage.Dto;
-using Storage.Enumerations;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UserClaimToDtoCreateUpdateUserClaimConverter.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   Converts a <see cref="UserClaim" /> to a <see cref="DtoCreateUpdateUserClaim" />.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Storage.Converter
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+
+    using AutoMapper;
+
+    using Newtonsoft.Json;
+
+    using Storage.Database;
+    using Storage.Dto;
+    using Storage.Enumerations;
+
     /// <summary>
     ///     Converts a <see cref="UserClaim" /> to a <see cref="DtoCreateUpdateUserClaim" />.
     /// </summary>

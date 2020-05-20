@@ -1,11 +1,23 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using AutoMapper;
-using Newtonsoft.Json;
-using Storage.Database;
-using Storage.Dto;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DtoReadUserClaimToUserClaimConverter.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   Converts a <see cref="DtoReadUserClaim" /> to a <see cref="UserClaim" />.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Storage.Converter
 {
+    using System.Diagnostics.CodeAnalysis;
+
+    using AutoMapper;
+
+    using Newtonsoft.Json;
+
+    using Storage.Database;
+    using Storage.Dto;
+
     /// <summary>
     ///     Converts a <see cref="DtoReadUserClaim" /> to a <see cref="UserClaim" />.
     /// </summary>

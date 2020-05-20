@@ -1,12 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
-using Storage;
-using Storage.Database;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Program.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   A program to setup the database.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace DatabaseSetup
 {
+    using System;
+    using System.Collections.Generic;
+
+    using Microsoft.AspNetCore.Identity;
+
+    using Newtonsoft.Json;
+
+    using Storage;
+    using Storage.Database;
+
     /// <summary>
     ///     A program to setup the database.
     /// </summary>
@@ -19,8 +31,15 @@ namespace DatabaseSetup
         public static void Main(string[] args)
         {
             Console.WriteLine("Setting up the database...");
-            var context = new MqttContext(new DatabaseConnectionSettings
-                {Host = "localhost", Database = "mqtt", Port = 5432, Username = "postgres", Password = "postgres"});
+            var context = new MqttContext(
+                new DatabaseConnectionSettings
+                {
+                    Host = "localhost",
+                    Database = "mqtt",
+                    Port = 5432,
+                    Username = "postgres",
+                    Password = "postgres"
+                });
 
             Console.WriteLine("Delete database...");
             context.Database.EnsureDeleted();

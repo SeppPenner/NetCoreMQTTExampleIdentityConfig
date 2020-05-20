@@ -1,4 +1,13 @@
-﻿namespace Storage.Enumerations
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ClaimType.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   The claim type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Storage.Enumerations
 {
     /// <summary>
     ///     The claim type.

@@ -1,7 +1,18 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DtoCreateUpdateUser.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   The user class to create or update a user.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Storage.Dto
 {
+    using System;
+
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     The user class to create or update a user.
     /// </summary>
@@ -45,6 +56,7 @@ namespace Storage.Dto
         /// <summary>
         ///     Gets or sets the password.
         /// </summary>
+        [JsonIgnore]
         public string Password { get; set; }
 
         /// <summary>
@@ -73,8 +85,7 @@ namespace Storage.Dto
         /// <returns>A <seealso cref="string" /> representation of the instance.</returns>
         public override string ToString()
         {
-            return
-                $"{nameof(LockoutEnd)}: {LockoutEnd}, {nameof(TwoFactorEnabled)}: {TwoFactorEnabled}, {nameof(PhoneNumberConfirmed)}: {PhoneNumberConfirmed}, {nameof(PhoneNumber)}: {PhoneNumber}, {nameof(EmailConfirmed)}: {EmailConfirmed}, {nameof(Email)}: {Email}, {nameof(UserName)}: {UserName}, {nameof(Password)}: {Password}, {nameof(LockoutEnabled)}: {LockoutEnabled}, {nameof(AccessFailedCount)}: {AccessFailedCount}, {nameof(ClientIdPrefix)}: {ClientIdPrefix}, {nameof(ClientId)}: {ClientId}";
+            return JsonConvert.SerializeObject(this);
         }
     }
 }

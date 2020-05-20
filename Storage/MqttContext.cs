@@ -1,10 +1,20 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Storage.Database;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MqttContext.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   Defines the MqttContext type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Storage
 {
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Options;
+
+    using Storage.Database;
+
     /// <inheritdoc cref="IdentityDbContext" />
     /// <summary>
     ///     Base class for the database context.
@@ -14,7 +24,7 @@ namespace Storage
         /// <summary>
         ///     The connection settings.
         /// </summary>
-        private readonly DatabaseConnectionSettings _connectionSettings;
+        private readonly DatabaseConnectionSettings connectionSettings;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="MqttContext" /> class.
@@ -23,7 +33,7 @@ namespace Storage
         // ReSharper disable once UnusedMember.Global
         public MqttContext(IOptions<DatabaseConnectionSettings> connectionSettingsAccessor)
         {
-            _connectionSettings = connectionSettingsAccessor.Value;
+            this.connectionSettings = connectionSettingsAccessor.Value;
         }
 
         /// <summary>
@@ -32,7 +42,7 @@ namespace Storage
         /// <param name="connectionSettings">The connection settings</param>
         public MqttContext(DatabaseConnectionSettings connectionSettings)
         {
-            _connectionSettings = connectionSettings;
+            this.connectionSettings = connectionSettings;
         }
 
         /// <summary>
@@ -41,14 +51,14 @@ namespace Storage
         // ReSharper disable once UnusedMember.Global
         public MqttContext()
         {
-            _connectionSettings = new DatabaseConnectionSettings();
+            this.connectionSettings = new DatabaseConnectionSettings();
         }
 
         /// <summary>
         ///     Gets the connection string.
         /// </summary>
         // ReSharper disable once UnusedMember.Global
-        public string ConnectionString => _connectionSettings.ToConnectionString();
+        public string ConnectionString => this.connectionSettings.ToConnectionString();
 
         /// <summary>
         ///     Gets or sets the database versions.
@@ -68,7 +78,7 @@ namespace Storage
             base.OnConfiguring(optionsBuilder);
 
             optionsBuilder.UseNpgsql(
-                $"Host={_connectionSettings.Host};Database={_connectionSettings.Database};Username={_connectionSettings.Username};Password={_connectionSettings.Password};Port={_connectionSettings.Port}");
+                $"Host={this.connectionSettings.Host};Database={this.connectionSettings.Database};Username={this.connectionSettings.Username};Password={this.connectionSettings.Password};Port={this.connectionSettings.Port}");
         }
 
         /// <inheritdoc cref="IdentityDbContext" />
@@ -131,7 +141,7 @@ namespace Storage
                 {
                     // Composite primary key consisting of the LoginProvider and the key to use
                     // with that provider
-                    b.HasKey(l => new {l.LoginProvider, l.ProviderKey});
+                    b.HasKey(l => new { l.LoginProvider, l.ProviderKey });
 
                     // Limit the size of the composite key columns due to common DB restrictions
                     b.Property(l => l.LoginProvider).HasMaxLength(128);
@@ -145,7 +155,7 @@ namespace Storage
                 b =>
                 {
                     // Composite primary key consisting of the UserId, LoginProvider and Name
-                    b.HasKey(t => new {t.UserId, t.LoginProvider, t.Name});
+                    b.HasKey(t => new { t.UserId, t.LoginProvider, t.Name });
 
                     // Limit the size of the composite key columns due to common DB restrictions
                     b.Property(t => t.LoginProvider).HasMaxLength(256);
@@ -198,7 +208,7 @@ namespace Storage
                 b =>
                 {
                     // Primary key
-                    b.HasKey(r => new {r.UserId, r.RoleId});
+                    b.HasKey(r => new { r.UserId, r.RoleId });
 
                     // Maps to the UserRoles table
                     b.ToTable("UserRoles");
@@ -208,7 +218,7 @@ namespace Storage
                 b =>
                 {
                     // Primary key
-                    b.HasKey(r => new {r.Id});
+                    b.HasKey(r => new { r.Id });
 
                     // Maps to the DbVersions table
                     b.ToTable("DbVersions");

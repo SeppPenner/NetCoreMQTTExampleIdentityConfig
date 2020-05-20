@@ -1,22 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NetCoreMQTTExampleIdentityConfig.Controllers.Extensions;
-using NSwag.Annotations;
-using Serilog;
-using Storage;
-using Storage.Database;
-using Storage.Dto;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UserController.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   The user controller class.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace NetCoreMQTTExampleIdentityConfig.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using AutoMapper;
+
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
+    using NetCoreMQTTExampleIdentityConfig.Controllers.Extensions;
+
+    using NSwag.Annotations;
+
+    using Serilog;
+
+    using Storage;
+    using Storage.Database;
+    using Storage.Dto;
+
     /// <summary>
     ///     The user controller class.
     /// </summary>
@@ -31,22 +46,22 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
-        private readonly IMapper _autoMapper;
+        private readonly IMapper autoMapper;
 
         /// <summary>
         ///     The database context.
         /// </summary>
-        private readonly MqttContext _databaseContext;
+        private readonly MqttContext databaseContext;
 
         /// <summary>
         ///     The password hasher.
         /// </summary>
-        private readonly PasswordHasher<User> _passwordHasher;
+        private readonly IPasswordHasher<User> passwordHasher;
 
         /// <summary>
         ///     The user manager.
         /// </summary>
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<User> userManager;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="UserController" /> class.
@@ -57,10 +72,10 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         // ReSharper disable once StyleCop.SA1650
         public UserController(MqttContext databaseContext, UserManager<User> userManager, IMapper autoMapper)
         {
-            _databaseContext = databaseContext;
-            _userManager = userManager;
-            _autoMapper = autoMapper;
-            _passwordHasher = new PasswordHasher<User>();
+            this.databaseContext = databaseContext;
+            this.userManager = userManager;
+            this.autoMapper = autoMapper;
+            this.passwordHasher = new PasswordHasher<User>();
         }
 
         /// <summary>
@@ -74,6 +89,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </remarks>
         /// <response code="200">Users found.</response>
         /// <response code="500">Internal server error.</response>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet]
@@ -85,12 +101,15 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 Log.Information("Executed GetUsers().");
 
-                var users = await _databaseContext.Users.ToListAsync();
+                var users = await this.databaseContext.Users.ToListAsync();
 
-                if (users?.Count == 0) return Ok("[]");
+                if (users?.Count == 0)
+                {
+                    return this.Ok("[]");
+                }
 
-                var returnUsers = _autoMapper.Map<IEnumerable<DtoReadUser>>(users);
-                return Ok(returnUsers);
+                var returnUsers = this.autoMapper.Map<IEnumerable<DtoReadUser>>(users);
+                return this.Ok(returnUsers);
             }
             catch (Exception ex)
             {
@@ -114,6 +133,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <response code="200">User found.</response>
         /// <response code="404">User not found.</response>
         /// <response code="500">Internal server error.</response>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet("{userId:long}")]
@@ -126,16 +146,16 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 Log.Information($"Executed GetUserById({userId}).");
 
-                var user = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                var user = await this.databaseContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
                 if (user == null)
                 {
                     Log.Warning($"User with identifier {userId} not found.");
-                    return NotFound(userId);
+                    return this.NotFound(userId);
                 }
 
-                var returnUser = _autoMapper.Map<DtoReadUser>(user);
-                return Ok(returnUser);
+                var returnUser = this.autoMapper.Map<DtoReadUser>(user);
+                return this.Ok(returnUser);
             }
             catch (Exception ex)
             {
@@ -158,6 +178,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// </remarks>
         /// <response code="200">User created.</response>
         /// <response code="500">Internal server error.</response>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpPost]
@@ -169,15 +190,15 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 Log.Information($"Executed CreateUser({createUser}).");
 
-                var user = _autoMapper.Map<User>(createUser);
+                var user = this.autoMapper.Map<User>(createUser);
                 user.CreatedAt = DateTimeOffset.Now;
-                var identityResult = await _userManager.CreateAsync(user, createUser.Password);
-                await _databaseContext.SaveChangesAsync();
+                var identityResult = await this.userManager.CreateAsync(user, createUser.Password);
+                await this.databaseContext.SaveChangesAsync();
 
                 if (identityResult.Succeeded)
                 {
-                    var returnUser = _autoMapper.Map<DtoReadUser>(user);
-                    return Ok(returnUser);
+                    var returnUser = this.autoMapper.Map<DtoReadUser>(user);
+                    return this.Ok(returnUser);
                 }
 
                 var identityErrors = identityResult.Errors.Select(e => new IdentityErrorExt(e));
@@ -210,6 +231,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <response code="200">User updated.</response>
         /// <response code="404">User not found.</response>
         /// <response code="500">Internal server error.</response>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpPut("{userId:long}")]
@@ -222,32 +244,32 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 Log.Information($"Executed UpdateUser({updateUser}) for user identifier: {userId}.");
 
-                var resultUser = await _databaseContext.Users.AsNoTracking().FirstOrDefaultAsync(b => b.Id == userId);
+                var resultUser = await this.databaseContext.Users.AsNoTracking().FirstOrDefaultAsync(b => b.Id == userId);
 
                 if (resultUser == null)
                 {
                     Log.Warning($"User with identifier {userId} not found.");
-                    return NotFound(userId);
+                    return this.NotFound(userId);
                 }
 
                 var concurrencyStamp = resultUser.ConcurrencyStamp;
                 var createdAt = resultUser.CreatedAt;
-                resultUser = _autoMapper.Map<User>(updateUser);
+                resultUser = this.autoMapper.Map<User>(updateUser);
                 resultUser.UpdatedAt = DateTimeOffset.Now;
-                resultUser.PasswordHash = _passwordHasher.HashPassword(resultUser, updateUser.Password);
+                resultUser.PasswordHash = this.passwordHasher.HashPassword(resultUser, updateUser.Password);
                 resultUser.SecurityStamp = new Guid().ToString();
                 resultUser.ConcurrencyStamp = concurrencyStamp;
                 resultUser.CreatedAt = createdAt;
                 resultUser.Id = userId;
 
-                var identityResult = await _userManager.UpdateAsync(resultUser);
-                await _databaseContext.SaveChangesAsync();
+                var identityResult = await this.userManager.UpdateAsync(resultUser);
+                await this.databaseContext.SaveChangesAsync();
 
                 if (identityResult.Succeeded)
                 {
-                    var returnUser = _autoMapper.Map<DtoReadUser>(resultUser);
+                    var returnUser = this.autoMapper.Map<DtoReadUser>(resultUser);
                     returnUser.Id = userId;
-                    return Ok(returnUser);
+                    return this.Ok(returnUser);
                 }
 
                 var identityErrors = identityResult.Errors.Select(e => new IdentityErrorExt(e));
@@ -287,13 +309,16 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             {
                 Log.Information($"Executed DeleteUserById({userId}).");
 
-                var user = await _databaseContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+                var user = await this.databaseContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
 
-                if (user == null) return Ok(userId);
+                if (user == null)
+                {
+                    return this.Ok(userId);
+                }
 
-                _databaseContext.Users.Remove(user);
-                await _databaseContext.SaveChangesAsync();
-                return Ok(userId);
+                this.databaseContext.Users.Remove(user);
+                await this.databaseContext.SaveChangesAsync();
+                return this.Ok(userId);
             }
             catch (Exception ex)
             {

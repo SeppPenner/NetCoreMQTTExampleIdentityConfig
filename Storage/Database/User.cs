@@ -1,8 +1,20 @@
-﻿using System;
-using Microsoft.AspNetCore.Identity;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="User.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   This class contains the customized user data if necessary.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Storage.Database
 {
+    using System;
+
+    using Microsoft.AspNetCore.Identity;
+
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     This class contains the customized user data if necessary.
     /// </summary>
@@ -50,8 +62,7 @@ namespace Storage.Database
         /// <returns>A <seealso cref="string" /> representation of the instance.</returns>
         public override string ToString()
         {
-            return
-                $"{base.ToString()}, {nameof(ClientIdPrefix)}: {ClientIdPrefix}, {nameof(ClientId)}: {ClientId}, {nameof(CreatedAt)}: {CreatedAt}, {nameof(UpdatedAt)}: {UpdatedAt}, {nameof(ThrottleUser)}: {ThrottleUser}, {nameof(MonthlyByteLimit)}: {MonthlyByteLimit}";
+            return JsonConvert.SerializeObject(this);
         }
     }
 }

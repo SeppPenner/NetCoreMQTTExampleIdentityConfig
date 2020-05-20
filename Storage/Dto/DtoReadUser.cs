@@ -1,7 +1,18 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DtoReadUser.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   The user class returned from the controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Storage.Dto
 {
+    using System;
+
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     The user class returned from the controller.
     /// </summary>
@@ -83,8 +94,7 @@ namespace Storage.Dto
         /// <returns>A <seealso cref="string" /> representation of the instance.</returns>
         public override string ToString()
         {
-            return
-                $"{nameof(LockoutEnd)}: {LockoutEnd}, {nameof(TwoFactorEnabled)}: {TwoFactorEnabled}, {nameof(PhoneNumberConfirmed)}: {PhoneNumberConfirmed}, {nameof(PhoneNumber)}: {PhoneNumber}, {nameof(EmailConfirmed)}: {EmailConfirmed}, {nameof(Email)}: {Email}, {nameof(UserName)}: {UserName}, {nameof(Id)}: {Id}, {nameof(LockoutEnabled)}: {LockoutEnabled}, {nameof(AccessFailedCount)}: {AccessFailedCount}, {nameof(CreatedAt)}: {CreatedAt}, {nameof(UpdatedAt)}: {UpdatedAt}, {nameof(ClientIdPrefix)}: {ClientIdPrefix}, {nameof(ClientId)}: {ClientId}";
+            return JsonConvert.SerializeObject(this);
         }
     }
 }

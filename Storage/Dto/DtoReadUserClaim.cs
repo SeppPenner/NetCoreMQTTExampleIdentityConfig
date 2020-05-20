@@ -1,11 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Storage.Enumerations;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DtoReadUserClaim.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   The user claim class returned from the controller.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Storage.Dto
 {
+    using System;
+    using System.Collections.Generic;
+
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+
+    using Storage.Enumerations;
+
     /// <summary>
     ///     The user claim class returned from the controller.
     /// </summary>
@@ -48,8 +59,7 @@ namespace Storage.Dto
         /// <returns>A <seealso cref="string" /> representation of the instance.</returns>
         public override string ToString()
         {
-            return
-                $"{nameof(Id)}: {Id}, {nameof(UserId)}: {UserId}, {nameof(ClaimType)}: {ClaimType}, {nameof(ClaimValues)}: {ClaimValues}, {nameof(CreatedAt)}: {CreatedAt}, {nameof(UpdatedAt)}: {UpdatedAt}";
+            return JsonConvert.SerializeObject(this);
         }
     }
 }

@@ -1,4 +1,13 @@
-﻿namespace Storage
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DatabaseConnectionSettings.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   A class for the database connection settings.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Storage
 {
     /// <summary>
     ///     A class for the database connection settings.
@@ -47,7 +56,7 @@
         public string ToConnectionString()
         {
             return
-                $"Server={Host};Port={Port};Database={Database};User Id={Username};Password={Password};Pooling={Pooling};Timezone={Timezone}";
+                $"Server={this.Host};Port={this.Port};Database={this.Database};User Id={this.Username};Password={this.Password};Pooling={this.Pooling};Timezone={this.Timezone}";
         }
     }
 }

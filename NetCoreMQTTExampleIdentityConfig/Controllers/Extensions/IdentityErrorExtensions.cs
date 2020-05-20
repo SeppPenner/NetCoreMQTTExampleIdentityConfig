@@ -1,7 +1,18 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IdentityErrorExtensions.cs" company="Haemmer Electronics">
+//   Copyright (c) 2020 All rights reserved.
+// </copyright>
+// <summary>
+//   Some extension methods for the <see cref="IdentityError"></see> class.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+using Microsoft.AspNetCore.Identity;
 
 namespace NetCoreMQTTExampleIdentityConfig.Controllers.Extensions
 {
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     Some extension methods for the <see cref="IdentityError"></see> class.
     /// </summary>
@@ -13,8 +24,8 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers.Extensions
         /// <param name="error">The error.</param>
         public IdentityErrorExt(IdentityError error)
         {
-            Code = error.Code;
-            Description = error.Description;
+            this.Code = error.Code;
+            this.Description = error.Description;
         }
 
         /// <summary>
@@ -23,7 +34,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers.Extensions
         /// <returns>A <seealso cref="string" /> value of the <seealso cref="IdentityError" />.</returns>
         public override string ToString()
         {
-            return $"{Code}:{Description}";
+            return JsonConvert.SerializeObject(this);
         }
     }
 }
