@@ -10,12 +10,12 @@
             </summary>
             <seealso cref="T:Microsoft.AspNetCore.Mvc.ControllerBase" />
         </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController._autoMapper">
+        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController.autoMapper">
             <summary>
                 The auto mapper.
             </summary>
         </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController._databaseContext">
+        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController.databaseContext">
             <summary>
                 The database context.
             </summary>
@@ -153,22 +153,22 @@
             </summary>
             <seealso cref="T:Microsoft.AspNetCore.Mvc.ControllerBase" />
         </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.UserController._autoMapper">
+        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.autoMapper">
             <summary>
                 The auto mapper.
             </summary>
         </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.UserController._databaseContext">
+        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.databaseContext">
             <summary>
                 The database context.
             </summary>
         </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.UserController._passwordHasher">
+        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.passwordHasher">
             <summary>
                 The password hasher.
             </summary>
         </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.UserController._userManager">
+        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.userManager">
             <summary>
                 The user manager.
             </summary>
@@ -320,7 +320,7 @@
             Gets or sets the data limit cache for throttling for monthly data.
             </summary>
         </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Startup._databaseContext">
+        <member name="F:NetCoreMQTTExampleIdentityConfig.Startup.databaseContext">
             <summary>
                 The database context.
             </summary>
