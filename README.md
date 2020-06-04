@@ -224,6 +224,7 @@ An example certificate is in the folder. Password for all is `test`.
 Change history
 --------------
 
+* **Version 1.0.6.0 (2020-06-04)** : Updated license year information, updated nuget packages.
 * **Version 1.0.5.0 (2020-02-03)** : Added possibility to lock users based on their data limit per month.
 * **Version 1.0.4.0 (2020-02-01)** : Updated nuget packages, moved to NetCore 3.1.
 * **Version 1.0.2.0 (2019-11-11)** : Added possibility to use all client ids with one user, added better logging.
