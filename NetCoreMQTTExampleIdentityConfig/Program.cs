@@ -11,10 +11,10 @@ namespace NetCoreMQTTExampleIdentityConfig
 {
     using System.IO;
     using System.Reflection;
-
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
-
+    using MQTTnet.AspNetCore;
     using Serilog;
 
     /// <summary>
@@ -26,7 +26,7 @@ namespace NetCoreMQTTExampleIdentityConfig
         ///     Defines the entry point of the application.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        public static void Main(string[] args)
+        public static Task Main(string[] args)
         {
             var currentLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -36,7 +36,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                     Path.Combine(currentLocation, @"log\NetCoreMQTTExampleIdentityConfig_.txt"),
                     rollingInterval: RollingInterval.Day).CreateLogger();
 
-            CreateWebHostBuilder(args).Build().Run();
+            CreateWebHostBuilder(args).Build().RunAsync();
         }
 
         /// <summary>
@@ -47,6 +47,11 @@ namespace NetCoreMQTTExampleIdentityConfig
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
+                .UseKestrel(o =>
+                {
+                    o.ListenAnyIP(1883, l => l.UseMqtt());
+                    o.ListenAnyIP(5000);
+                })
                 .UseStartup<Startup>();
         }
     }
