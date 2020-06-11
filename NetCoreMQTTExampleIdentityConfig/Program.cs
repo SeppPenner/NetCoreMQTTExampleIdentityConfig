@@ -36,7 +36,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                     Path.Combine(currentLocation, @"log\NetCoreMQTTExampleIdentityConfig_.txt"),
                     rollingInterval: RollingInterval.Day).CreateLogger();
 
-            CreateWebHostBuilder(args).Build().RunAsync();
+            return CreateWebHostBuilder(args).Build().RunAsync();
         }
 
         /// <summary>
