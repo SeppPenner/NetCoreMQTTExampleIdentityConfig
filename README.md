@@ -3,7 +3,7 @@ NetCoreMQTTExampleIdentityConfig
 
 NetCoreMQTTExampleIdentityConfig is a project to check user credentials and topic restrictions from [MQTTnet](https://github.com/chkr1011/MQTTnet)
 from a database using [Asp.Net Identity](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-2.2&tabs=visual-studio).
-The project was written and tested in .NetCore 3.1.
+The project was written and tested in .Net 5.0.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/6pfhxv7lglc2mvho?svg=true)](https://ci.appveyor.com/project/SeppPenner/netcoremqttexampleidentityconfig)
 [![GitHub issues](https://img.shields.io/github/issues/SeppPenner/NetCoreMQTTExampleIdentityConfig.svg)](https://github.com/SeppPenner/NetCoreMQTTExampleIdentityConfig/issues)
@@ -228,10 +228,4 @@ An example certificate is in the folder. Password for all is `test`.
 Change history
 --------------
 
-* **Version 1.0.6.0 (2020-06-04)** : Updated license year information, updated nuget packages.
-* **Version 1.0.5.0 (2020-02-03)** : Added possibility to lock users based on their data limit per month.
-* **Version 1.0.4.0 (2020-02-01)** : Updated nuget packages, moved to NetCore 3.1.
-* **Version 1.0.2.0 (2019-11-11)** : Added possibility to use all client ids with one user, added better logging.
-* **Version 1.0.1.0 (2019-09-29)** : Updated swagger documentation and code style.
-* **Version 1.0.0.1 (2019-09-27)** : Updated nuget packages, moved to NetCore 3.0.
-* **Version 1.0.0.0 (2019-08-06)** : 1.0 release.
+See the [Changelog](https://github.com/SeppPenner/NetCoreMQTTExampleIdentityConfig/blob/master/Changelog.md).
