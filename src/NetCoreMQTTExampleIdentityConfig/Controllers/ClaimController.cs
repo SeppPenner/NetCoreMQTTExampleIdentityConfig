@@ -82,12 +82,14 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         ///     Gets all claims.
         /// </remarks>
         /// <response code="200">Claims found.</response>
+        /// <response code="401">Unauthorized.</response>
         /// <response code="500">Internal server error.</response>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<DtoReadUserClaim>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<DtoReadUserClaim>>> GetClaims()
         {
@@ -125,6 +127,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         ///     Gets a claim by its id.
         /// </remarks>
         /// <response code="200">Claims found.</response>
+        /// <response code="401">Unauthorized.</response>
         /// <response code="404">Claim not found.</response>
         /// <response code="500">Internal server error.</response>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
@@ -132,6 +135,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet("{claimId:long}")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<DtoReadUserClaim>> GetClaimById(long claimId)
@@ -171,12 +175,14 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         ///     Creates or updates a claim.
         /// </remarks>
         /// <response code="200">Claim created.</response>
+        /// <response code="401">Unauthorized.</response>
         /// <response code="500">Internal server error.</response>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpPost]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> CreateOrUpdateClaim([FromBody] DtoCreateUpdateUserClaim createUserClaim)
         {
@@ -235,6 +241,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         ///     Updates a claim.
         /// </remarks>
         /// <response code="200">Claim updated.</response>
+        /// <response code="401">Unauthorized.</response>
         /// <response code="404">Claim not found.</response>
         /// <response code="500">Internal server error.</response>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
@@ -242,6 +249,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpPut("{claimId:long}")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdateClaim(long claimId, [FromBody] DtoCreateUpdateUserClaim updateUserClaim)
@@ -289,12 +297,14 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         ///     Deletes a claim by its id.
         /// </remarks>
         /// <response code="200">Claim deleted.</response>
+        /// <response code="401">Unauthorized.</response>
         /// <response code="500">Internal server error.</response>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpDelete("{claimId:long}")]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteClaimById(long claimId)
         {

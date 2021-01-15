@@ -93,12 +93,14 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         ///     Gets all users.
         /// </remarks>
         /// <response code="200">Users found.</response>
+        /// <response code="401">Unauthorized.</response>
         /// <response code="500">Internal server error.</response>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<DtoReadUser>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<DtoReadUser>>> GetUsers()
         {
@@ -136,6 +138,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         ///     Gets a user by their id.
         /// </remarks>
         /// <response code="200">User found.</response>
+        /// <response code="401">Unauthorized.</response>
         /// <response code="404">User not found.</response>
         /// <response code="500">Internal server error.</response>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
@@ -143,6 +146,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet("{userId:long}")]
         [ProducesResponseType(typeof(DtoReadUser), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<DtoReadUser>> GetUserById(long userId)
@@ -182,12 +186,14 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         ///     Creates a user.
         /// </remarks>
         /// <response code="200">User created.</response>
+        /// <response code="401">Unauthorized.</response>
         /// <response code="500">Internal server error.</response>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpPost]
         [ProducesResponseType(typeof(DtoReadUser), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> CreateUser([FromBody] DtoCreateUpdateUser createUser)
         {
@@ -234,6 +240,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         ///     Updates a user.
         /// </remarks>
         /// <response code="200">User updated.</response>
+        /// <response code="401">Unauthorized.</response>
         /// <response code="404">User not found.</response>
         /// <response code="500">Internal server error.</response>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
@@ -241,6 +248,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpPut("{userId:long}")]
         [ProducesResponseType(typeof(DtoReadUser), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(int), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdateUser(long userId, [FromBody] DtoCreateUpdateUser updateUser)
@@ -302,11 +310,13 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         ///     Deletes a user by their id.
         /// </remarks>
         /// <response code="200">User deleted.</response>
+        /// <response code="401">Unauthorized.</response>
         /// <response code="500">Internal server error.</response>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
         [HttpDelete("{userId:long}")]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteUserById(long userId)
         {
