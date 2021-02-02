@@ -12,8 +12,9 @@ namespace NetCoreMQTTExampleIdentityConfig
     using System.IO;
     using System.Reflection;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
+
     using MQTTnet.AspNetCore.Extensions;
 
     using Serilog;
@@ -38,23 +39,32 @@ namespace NetCoreMQTTExampleIdentityConfig
                     Path.Combine(currentLocation, @"log\NetCoreMQTTExampleIdentityConfig_.txt"),
                     rollingInterval: RollingInterval.Day).CreateLogger();
 
-            return CreateWebHostBuilder(args).Build().RunAsync();
+            return CreateHostBuilder(args, currentLocation).Build().RunAsync();
         }
 
         /// <summary>
-        ///     Creates the web host builder.
+        /// Creates the host builder.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        /// <returns>The <see cref="IWebHostBuilder" />.</returns>
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
-        {
-            return WebHost.CreateDefaultBuilder(args)
-                .UseKestrel(o =>
-                {
-                    o.ListenAnyIP(1883, l => l.UseMqtt());
-                    o.ListenAnyIP(5000);
-                })
-                .UseStartup<Startup>();
-        }
+        /// <param name="currentLocation">The current assembly location.</param>
+        /// <returns>A new <see cref="IHostBuilder"/>.</returns>
+        private static IHostBuilder CreateHostBuilder(string[] args, string currentLocation) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(
+                    webBuilder =>
+                        {
+                            webBuilder.UseSerilog();
+                            webBuilder.UseContentRoot(currentLocation);
+                            webBuilder.UseStartup<Startup>();
+                            webBuilder.UseKestrel(
+                                o =>
+                                    {
+                                        o.ListenAnyIP(1883, l => l.UseMqtt());
+                                        o.ListenAnyIP(5000);
+                                    });
+                        })
+                .UseSerilog()
+                .UseWindowsService()
+                .UseSystemd();
     }
 }
