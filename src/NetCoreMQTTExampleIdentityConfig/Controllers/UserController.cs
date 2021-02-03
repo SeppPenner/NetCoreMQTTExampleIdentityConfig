@@ -66,17 +66,19 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILogger logger = Log.ForContext<UserController>();
+        private readonly ILogger logger;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="UserController" /> class.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="databaseContext">The database context.</param>
         /// <param name="userManager">The user manager.</param>
         /// <param name="autoMapper">The auto mapper service.</param>
         // ReSharper disable once StyleCop.SA1650
-        public UserController(MqttContext databaseContext, UserManager<User> userManager, IMapper autoMapper)
+        public UserController(ILogger logger, MqttContext databaseContext, UserManager<User> userManager, IMapper autoMapper)
         {
+            this.logger = logger;
             this.databaseContext = databaseContext;
             this.userManager = userManager;
             this.autoMapper = autoMapper;

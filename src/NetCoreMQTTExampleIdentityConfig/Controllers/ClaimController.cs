@@ -57,17 +57,19 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILogger logger = Log.ForContext<ClaimController>();
+        private readonly ILogger logger;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClaimController" /> class.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="databaseContext">The database context.</param>
         /// <param name="autoMapper">The auto mapper service.</param>
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
             Justification = "Reviewed. Suppression is OK here.")]
-        public ClaimController(MqttContext databaseContext, IMapper autoMapper)
+        public ClaimController(ILogger logger, MqttContext databaseContext, IMapper autoMapper)
         {
+            this.logger = logger;
             this.databaseContext = databaseContext;
             this.autoMapper = autoMapper;
         }

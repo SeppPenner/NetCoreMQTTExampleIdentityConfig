@@ -140,6 +140,9 @@ namespace NetCoreMQTTExampleIdentityConfig
 
             services.AddIdentity<User, Role>().AddEntityFrameworkStores<MqttContext>().AddDefaultTokenProviders();
 
+            // Add logger
+            services.AddSingleton(Log.Logger);
+
             // Add response compression
             services.AddResponseCompression();
 
