@@ -441,7 +441,7 @@ namespace NetCoreMQTTExampleIdentityConfig
             services.AddMqttConnectionHandler();
 
             // Add the MVC stuff
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc();
         }
 
         /// <summary>

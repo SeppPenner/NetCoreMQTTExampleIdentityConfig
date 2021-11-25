@@ -25,10 +25,11 @@
             The logger.
             </summary>
         </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController.#ctor(Storage.MqttContext,AutoMapper.IMapper)">
+        <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController.#ctor(Serilog.ILogger,Storage.MqttContext,AutoMapper.IMapper)">
             <summary>
                 Initializes a new instance of the <see cref="T:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController" /> class.
             </summary>
+            <param name="logger">The logger.</param>
             <param name="databaseContext">The database context.</param>
             <param name="autoMapper">The auto mapper service.</param>
         </member>
@@ -43,6 +44,7 @@
                 Gets all claims.
             </remarks>
             <response code="200">Claims found.</response>
+            <response code="401">Unauthorized.</response>
             <response code="500">Internal server error.</response>
         </member>
         <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController.GetClaimById(System.Int64)">
@@ -59,6 +61,7 @@
                 Gets a claim by its id.
             </remarks>
             <response code="200">Claims found.</response>
+            <response code="401">Unauthorized.</response>
             <response code="404">Claim not found.</response>
             <response code="500">Internal server error.</response>
         </member>
@@ -76,6 +79,7 @@
                 Creates or updates a claim.
             </remarks>
             <response code="200">Claim created.</response>
+            <response code="401">Unauthorized.</response>
             <response code="500">Internal server error.</response>
         </member>
         <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController.UpdateClaim(System.Int64,Storage.Dto.DtoCreateUpdateUserClaim)">
@@ -95,6 +99,7 @@
                 Updates a claim.
             </remarks>
             <response code="200">Claim updated.</response>
+            <response code="401">Unauthorized.</response>
             <response code="404">Claim not found.</response>
             <response code="500">Internal server error.</response>
         </member>
@@ -112,6 +117,7 @@
                 Deletes a claim by its id.
             </remarks>
             <response code="200">Claim deleted.</response>
+            <response code="401">Unauthorized.</response>
             <response code="500">Internal server error.</response>
         </member>
         <member name="T:NetCoreMQTTExampleIdentityConfig.Controllers.Extensions.ControllerBaseExtensions">
@@ -183,10 +189,11 @@
             The logger.
             </summary>
         </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.#ctor(Storage.MqttContext,Microsoft.AspNetCore.Identity.UserManager{Storage.Database.User},AutoMapper.IMapper)">
+        <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.#ctor(Serilog.ILogger,Storage.MqttContext,Microsoft.AspNetCore.Identity.UserManager{Storage.Database.User},AutoMapper.IMapper)">
             <summary>
                 Initializes a new instance of the <see cref="T:NetCoreMQTTExampleIdentityConfig.Controllers.UserController" /> class.
             </summary>
+            <param name="logger">The logger.</param>
             <param name="databaseContext">The database context.</param>
             <param name="userManager">The user manager.</param>
             <param name="autoMapper">The auto mapper service.</param>
@@ -202,6 +209,7 @@
                 Gets all users.
             </remarks>
             <response code="200">Users found.</response>
+            <response code="401">Unauthorized.</response>
             <response code="500">Internal server error.</response>
         </member>
         <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.GetUserById(System.Int64)">
@@ -218,6 +226,7 @@
                 Gets a user by their id.
             </remarks>
             <response code="200">User found.</response>
+            <response code="401">Unauthorized.</response>
             <response code="404">User not found.</response>
             <response code="500">Internal server error.</response>
         </member>
@@ -235,6 +244,7 @@
                 Creates a user.
             </remarks>
             <response code="200">User created.</response>
+            <response code="401">Unauthorized.</response>
             <response code="500">Internal server error.</response>
         </member>
         <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.UpdateUser(System.Int64,Storage.Dto.DtoCreateUpdateUser)">
@@ -254,6 +264,7 @@
                 Updates a user.
             </remarks>
             <response code="200">User updated.</response>
+            <response code="401">Unauthorized.</response>
             <response code="404">User not found.</response>
             <response code="500">Internal server error.</response>
         </member>
@@ -271,6 +282,7 @@
                 Deletes a user by their id.
             </remarks>
             <response code="200">User deleted.</response>
+            <response code="401">Unauthorized.</response>
             <response code="500">Internal server error.</response>
         </member>
         <member name="T:NetCoreMQTTExampleIdentityConfig.DateTimeExtensions">
@@ -309,12 +321,13 @@
             <param name="args">The arguments.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing any asynchronous operation.</returns>
         </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.Program.CreateWebHostBuilder(System.String[])">
+        <member name="M:NetCoreMQTTExampleIdentityConfig.Program.CreateHostBuilder(System.String[],System.String)">
             <summary>
-                Creates the web host builder.
+            Creates the host builder.
             </summary>
             <param name="args">The arguments.</param>
-            <returns>The <see cref="T:Microsoft.AspNetCore.Hosting.IWebHostBuilder" />.</returns>
+            <param name="currentLocation">The current assembly location.</param>
+            <returns>A new <see cref="T:Microsoft.Extensions.Hosting.IHostBuilder"/>.</returns>
         </member>
         <member name="T:NetCoreMQTTExampleIdentityConfig.Startup">
             <summary>

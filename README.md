@@ -3,7 +3,6 @@ NetCoreMQTTExampleIdentityConfig
 
 NetCoreMQTTExampleIdentityConfig is a project to check user credentials and topic restrictions from [MQTTnet](https://github.com/chkr1011/MQTTnet)
 from a database using [Asp.Net Identity](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-2.2&tabs=visual-studio).
-The project was written and tested in .Net 5.0.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/6pfhxv7lglc2mvho?svg=true)](https://ci.appveyor.com/project/SeppPenner/netcoremqttexampleidentityconfig)
 [![GitHub issues](https://img.shields.io/github/issues/SeppPenner/NetCoreMQTTExampleIdentityConfig.svg)](https://github.com/SeppPenner/NetCoreMQTTExampleIdentityConfig/issues)
