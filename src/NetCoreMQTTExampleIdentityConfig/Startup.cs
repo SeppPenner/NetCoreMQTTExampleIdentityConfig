@@ -249,20 +249,12 @@ namespace NetCoreMQTTExampleIdentityConfig
                             if (string.IsNullOrWhiteSpace(clientIdPrefix))
                             {
                                 userFound = c.SessionItems.TryGetValue(c.ClientId, out var currentUserObject);
-
-                                if (currentUserObject is User foundUser)
-                                {
-                                    currentUser = foundUser;
-                                }
+                                currentUser = currentUserObject as User;
                             }
                             else
                             {
                                 userFound = c.SessionItems.TryGetValue(clientIdPrefix, out var currentUserObject);
-
-                                if (currentUserObject is User foundUser)
-                                {
-                                    currentUser = foundUser;
-                                }
+                                currentUser = currentUserObject as User;
                             }
 
                             if (!userFound || currentUser is null)
@@ -303,7 +295,6 @@ namespace NetCoreMQTTExampleIdentityConfig
                                 return;
                             }
 
-                            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                             foreach (var forbiddenTopic in blacklist)
                             {
                                 var doesTopicMatch = TopicChecker.Regex(forbiddenTopic, topic);
@@ -317,7 +308,6 @@ namespace NetCoreMQTTExampleIdentityConfig
                                 return;
                             }
 
-                            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                             foreach (var allowedTopic in whitelist)
                             {
                                 var doesTopicMatch = TopicChecker.Regex(allowedTopic, topic);
@@ -343,20 +333,12 @@ namespace NetCoreMQTTExampleIdentityConfig
                             if (string.IsNullOrWhiteSpace(clientIdPrefix))
                             {
                                 userFound = c.SessionItems.TryGetValue(c.ClientId, out var currentUserObject);
-
-                                if (currentUserObject is User foundUser)
-                                {
-                                    currentUser = foundUser;
-                                }
+                                currentUser = currentUserObject as User;
                             }
                             else
                             {
                                 userFound = c.SessionItems.TryGetValue(clientIdPrefix, out var currentUserObject);
-
-                                if (currentUserObject is User foundUser)
-                                {
-                                    currentUser = foundUser;
-                                }
+                                currentUser = currentUserObject as User;
                             }
 
                             if (!userFound || currentUser is null)
