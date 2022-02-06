@@ -11,7 +11,6 @@ namespace Storage.Converter
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
 
     using AutoMapper;
 
@@ -36,20 +35,17 @@ namespace Storage.Converter
         /// <returns>
         ///     Destination object.
         /// </returns>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted",
-            Justification = "Reviewed. Suppression is OK here.")]
         public DtoCreateUpdateUserClaim Convert(UserClaim source, DtoCreateUpdateUserClaim destination,
             ResolutionContext context)
         {
-            // ReSharper disable once UnusedVariable
             var parsed = Enum.TryParse(source.ClaimType, out ClaimType enumValue);
 
             return new DtoCreateUpdateUserClaim
             {
                 ClaimType = enumValue,
                 UserId = source.UserId,
-                ClaimValues = JsonConvert.DeserializeObject<List<string>>(source.ClaimValue)
-            };
+                ClaimValues = JsonConvert.DeserializeObject<List<string>>(source.ClaimValue) ?? new List<string>()
+        };
         }
     }
 }

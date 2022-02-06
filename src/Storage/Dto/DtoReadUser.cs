@@ -27,38 +27,32 @@ namespace Storage.Dto
         /// <summary>
         ///     Gets or sets a value indicating whether two factor authentication is enabled or not.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
         public bool TwoFactorEnabled { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether the phone number is confirmed or not.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
         public bool PhoneNumberConfirmed { get; set; }
 
         /// <summary>
         ///     Gets or sets the phone number.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
-        public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets a value indicating whether the email is confirmed or not.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
         public bool EmailConfirmed { get; set; }
 
         /// <summary>
         ///     Gets or sets the email.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets the name of the user.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets the identifier.
@@ -68,38 +62,32 @@ namespace Storage.Dto
         /// <summary>
         ///     Gets or sets a value indicating whether the lockout is enabled or not.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
         public bool LockoutEnabled { get; set; }
 
         /// <summary>
         ///     Gets or sets the access failed count.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
         public int AccessFailedCount { get; set; }
 
         /// <summary>
         ///     Gets or sets the created at timestamp.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
         public virtual DateTimeOffset CreatedAt { get; set; }
 
         /// <summary>
         ///     Gets or sets the updated at timestamp.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
         public virtual DateTimeOffset? UpdatedAt { get; set; } = null;
 
         /// <summary>
         ///     Gets or sets the client identifier prefix.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
-        public string ClientIdPrefix { get; set; }
+        public string ClientIdPrefix { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets the client identifier.
         /// </summary>
-        // ReSharper disable once UnusedMember.Global
-        public string ClientId { get; set; }
+        public string ClientId { get; set; } = string.Empty;
 
         /// <summary>
         ///     Returns a <seealso cref="string" /> which represents the object instance.

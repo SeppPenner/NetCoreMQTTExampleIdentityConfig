@@ -27,8 +27,7 @@ namespace DatabaseSetup
         /// <summary>
         ///     The main method of the program.
         /// </summary>
-        /// <param name="args">Some parameters, currently unused.</param>
-        public static void Main(string[] args)
+        public static void Main()
         {
             Console.WriteLine("Setting up the database...");
             var context = new MqttContext(
@@ -61,6 +60,12 @@ namespace DatabaseSetup
         private static void SeedData(MqttContext context)
         {
             var version = new DbVersion { Version = "1.0.0.0", VersionName = "Sicario", CreatedAt = DateTimeOffset.Now };
+
+            if (context.DbVersions is null)
+            {
+                return;
+            }
+
             context.DbVersions.Add(version);
             context.SaveChanges();
 

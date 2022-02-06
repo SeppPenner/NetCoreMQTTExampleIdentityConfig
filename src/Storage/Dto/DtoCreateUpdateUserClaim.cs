@@ -35,7 +35,7 @@ namespace Storage.Dto
         /// <summary>
         ///     Gets or sets the claim value.
         /// </summary>
-        public List<string> ClaimValues { get; set; }
+        public List<string> ClaimValues { get; set; } = new();
 
         /// <summary>
         ///     Returns a <seealso cref="string" /> which represents the object instance.

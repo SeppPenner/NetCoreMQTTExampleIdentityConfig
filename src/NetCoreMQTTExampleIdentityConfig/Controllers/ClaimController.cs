@@ -11,7 +11,6 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -45,8 +44,6 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <summary>
         ///     The auto mapper.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
-            Justification = "Reviewed. Suppression is OK here.")]
         private readonly IMapper autoMapper;
 
         /// <summary>
@@ -65,8 +62,6 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <param name="logger">The logger.</param>
         /// <param name="databaseContext">The database context.</param>
         /// <param name="autoMapper">The auto mapper service.</param>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
-            Justification = "Reviewed. Suppression is OK here.")]
         public ClaimController(ILogger logger, MqttContext databaseContext, IMapper autoMapper)
         {
             this.logger = logger;
@@ -86,9 +81,6 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <response code="200">Claims found.</response>
         /// <response code="401">Unauthorized.</response>
         /// <response code="500">Internal server error.</response>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
-            Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<DtoReadUserClaim>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
@@ -132,9 +124,6 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <response code="401">Unauthorized.</response>
         /// <response code="404">Claim not found.</response>
         /// <response code="500">Internal server error.</response>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
-            Justification = "Reviewed. Suppression is OK here.")]
         [HttpGet("{claimId:long}")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
@@ -179,9 +168,6 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <response code="200">Claim created.</response>
         /// <response code="401">Unauthorized.</response>
         /// <response code="500">Internal server error.</response>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
-            Justification = "Reviewed. Suppression is OK here.")]
         [HttpPost]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
@@ -210,7 +196,7 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
                 else
                 {
                     foundClaim.UpdatedAt = DateTimeOffset.Now;
-                    var currentClaimValue = JsonConvert.DeserializeObject<List<string>>(foundClaim.ClaimValue);
+                    var currentClaimValue = JsonConvert.DeserializeObject<List<string>>(foundClaim.ClaimValue) ?? new List<string>();
                     currentClaimValue.AddRange(createUserClaim.ClaimValues);
                     foundClaim.ClaimValue = JsonConvert.SerializeObject(currentClaimValue.Distinct());
                     this.databaseContext.UserClaims.Update(foundClaim);
@@ -246,9 +232,6 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <response code="401">Unauthorized.</response>
         /// <response code="404">Claim not found.</response>
         /// <response code="500">Internal server error.</response>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
-            Justification = "Reviewed. Suppression is OK here.")]
         [HttpPut("{claimId:long}")]
         [ProducesResponseType(typeof(DtoReadUserClaim), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
@@ -301,9 +284,6 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers
         /// <response code="200">Claim deleted.</response>
         /// <response code="401">Unauthorized.</response>
         /// <response code="500">Internal server error.</response>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1625:ElementDocumentationMustNotBeCopiedAndPasted", Justification = "Reviewed. Suppression is OK here.")]
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly",
-            Justification = "Reviewed. Suppression is OK here.")]
         [HttpDelete("{claimId:long}")]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]

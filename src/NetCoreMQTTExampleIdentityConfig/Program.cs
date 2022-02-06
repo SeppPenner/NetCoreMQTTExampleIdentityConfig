@@ -31,7 +31,7 @@ namespace NetCoreMQTTExampleIdentityConfig
         /// <returns>A <see cref="Task"/> representing any asynchronous operation.</returns>
         public static Task Main(string[] args)
         {
-            var currentLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var currentLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug().WriteTo.File(

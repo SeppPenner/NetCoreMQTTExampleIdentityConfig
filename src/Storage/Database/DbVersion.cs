@@ -26,12 +26,12 @@ namespace Storage.Database
         /// <summary>
         ///     Gets or sets the version.
         /// </summary>
-        public virtual string Version { get; set; }
+        public virtual string Version { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets the version name.
         /// </summary>
-        public virtual string VersionName { get; set; }
+        public virtual string VersionName { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets the created at timestamp.

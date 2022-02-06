@@ -41,7 +41,7 @@ namespace Storage.Dto
         /// <summary>
         ///     Gets or sets the claim value.
         /// </summary>
-        public List<string> ClaimValues { get; set; }
+        public List<string> ClaimValues { get; set; } = new();
 
         /// <summary>
         ///     Gets or sets the created at timestamp.

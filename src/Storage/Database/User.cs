@@ -24,12 +24,12 @@ namespace Storage.Database
         /// <summary>
         ///     Gets or sets the client identifier prefix.
         /// </summary>
-        public virtual string ClientIdPrefix { get; set; }
+        public virtual string ClientIdPrefix { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets the client identifier.
         /// </summary>
-        public virtual string ClientId { get; set; }
+        public virtual string ClientId { get; set; } = string.Empty;
 
         /// <summary> 
         /// Gets or sets a value indicating whether the client id is validated or not. 

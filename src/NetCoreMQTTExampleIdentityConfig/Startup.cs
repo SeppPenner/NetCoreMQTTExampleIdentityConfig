@@ -68,7 +68,7 @@ namespace NetCoreMQTTExampleIdentityConfig
         /// <summary>
         ///     The database context.
         /// </summary>
-        private static MqttContext databaseContext;
+        private static MqttContext databaseContext = new();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Startup" /> class.
@@ -165,7 +165,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                 });
 
             // Read certificate
-            var currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty; ;
             var certificate = new X509Certificate2(
                 // ReSharper disable once AssignNullToNotNullAttribute
                 Path.Combine(currentPath, "certificate.pfx"),
@@ -243,21 +243,29 @@ namespace NetCoreMQTTExampleIdentityConfig
                         c =>
                         {
                             var clientIdPrefix = GetClientIdPrefix(c.ClientId);
-                            User currentUser;
+                            User? currentUser = null;
                             bool userFound;
 
                             if (string.IsNullOrWhiteSpace(clientIdPrefix))
                             {
                                 userFound = c.SessionItems.TryGetValue(c.ClientId, out var currentUserObject);
-                                currentUser = currentUserObject as User;
+
+                                if (currentUserObject is User foundUser)
+                                {
+                                    currentUser = foundUser;
+                                }
                             }
                             else
                             {
                                 userFound = c.SessionItems.TryGetValue(clientIdPrefix, out var currentUserObject);
-                                currentUser = currentUserObject as User;
+
+                                if (currentUserObject is User foundUser)
+                                {
+                                    currentUser = foundUser;
+                                }
                             }
 
-                            if (!userFound || currentUser == null)
+                            if (!userFound || currentUser is null)
                             {
                                 c.AcceptSubscription = false;
                                 LogMessage(c, false);
@@ -271,20 +279,14 @@ namespace NetCoreMQTTExampleIdentityConfig
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.SubscriptionBlacklist.ToString());
 
-                            var blacklist =
-                                // ReSharper disable once AssignNullToNotNullAttribute
-                                JsonConvert.DeserializeObject<List<string>>(subscriptionBlackList?.ClaimValue)
-                                ?? new List<string>();
+                            var blacklist = subscriptionBlackList?.ClaimValue is null ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(subscriptionBlackList.ClaimValue) ?? new List<string>();
 
                             // Get whitelist
                             var subscriptionWhitelist = databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.SubscriptionWhitelist.ToString());
 
-                            var whitelist =
-                                // ReSharper disable once AssignNullToNotNullAttribute
-                                JsonConvert.DeserializeObject<List<string>>(subscriptionWhitelist?.ClaimValue)
-                                ?? new List<string>();
+                            var whitelist = subscriptionWhitelist?.ClaimValue is null ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(subscriptionWhitelist.ClaimValue) ?? new List<string>();
 
                             // Check matches
                             if (blacklist.Contains(topic))
@@ -335,21 +337,29 @@ namespace NetCoreMQTTExampleIdentityConfig
                         c =>
                         {
                             var clientIdPrefix = GetClientIdPrefix(c.ClientId);
-                            User currentUser;
+                            User? currentUser = null;
                             bool userFound;
 
                             if (string.IsNullOrWhiteSpace(clientIdPrefix))
                             {
                                 userFound = c.SessionItems.TryGetValue(c.ClientId, out var currentUserObject);
-                                currentUser = currentUserObject as User;
+
+                                if (currentUserObject is User foundUser)
+                                {
+                                    currentUser = foundUser;
+                                }
                             }
                             else
                             {
                                 userFound = c.SessionItems.TryGetValue(clientIdPrefix, out var currentUserObject);
-                                currentUser = currentUserObject as User;
+
+                                if (currentUserObject is User foundUser)
+                                {
+                                    currentUser = foundUser;
+                                }
                             }
 
-                            if (!userFound || currentUser == null)
+                            if (!userFound || currentUser is null)
                             {
                                 c.AcceptPublish = false;
                                 return;
@@ -379,20 +389,14 @@ namespace NetCoreMQTTExampleIdentityConfig
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.PublishBlacklist.ToString());
 
-                            var blacklist =
-                                // ReSharper disable once AssignNullToNotNullAttribute
-                                JsonConvert.DeserializeObject<List<string>>(publishBlackList?.ClaimValue)
-                                ?? new List<string>();
+                            var blacklist = publishBlackList?.ClaimValue is null ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(publishBlackList.ClaimValue) ?? new List<string>();
 
                             // Get whitelist
                             var publishWhitelist = databaseContext.UserClaims.FirstOrDefault(
                                 uc => uc.UserId == currentUser.Id
                                       && uc.ClaimType == ClaimType.PublishWhitelist.ToString());
 
-                            var whitelist =
-                                // ReSharper disable once AssignNullToNotNullAttribute
-                                JsonConvert.DeserializeObject<List<string>>(publishWhitelist?.ClaimValue)
-                                ?? new List<string>();
+                            var whitelist = publishWhitelist?.ClaimValue is null ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(publishWhitelist.ClaimValue) ?? new List<string>();
 
                             // Check matches
                             if (blacklist.Contains(topic))
@@ -462,7 +466,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                 }
             }
 
-            return null;
+            return string.Empty;
         }
 
         /// <summary> 
@@ -496,7 +500,7 @@ namespace NetCoreMQTTExampleIdentityConfig
                 return;
             }
 
-            var payload = context.ApplicationMessage?.Payload == null ? null : Encoding.UTF8.GetString(context.ApplicationMessage?.Payload);
+            var payload = context.ApplicationMessage?.Payload == null ? null : Encoding.UTF8.GetString(context.ApplicationMessage.Payload);
 
             Logger.Information(
                 "Message: ClientId = {@ClientId}, Topic = {@Topic}, Payload = {@Payload}, QoS = {@Qos}, Retain-Flag = {@RetainFlag}",

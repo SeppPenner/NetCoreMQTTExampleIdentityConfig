@@ -63,7 +63,7 @@ namespace Storage
         /// <summary>
         ///     Gets or sets the database versions.
         /// </summary>
-        public DbSet<DbVersion> DbVersions { get; set; }
+        public DbSet<DbVersion>? DbVersions { get; set; }
 
         /// <inheritdoc cref="IdentityDbContext" />
         /// <summary>
