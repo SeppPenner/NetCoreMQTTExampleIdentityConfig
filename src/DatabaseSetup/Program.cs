@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Program.cs" company="Hämmer Electronics">
 //   Copyright (c) 2020 All rights reserved.
 // </copyright>
@@ -7,127 +7,119 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace DatabaseSetup
+namespace DatabaseSetup;
+
+/// <summary>
+///     A program to setup the database.
+/// </summary>
+public static class Program
 {
-    using System;
-    using System.Collections.Generic;
+    /// <summary>
+    ///     The main method of the program.
+    /// </summary>
+    public static void Main()
+    {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-    using Microsoft.AspNetCore.Identity;
+        Console.WriteLine("Setting up the database...");
 
-    using Newtonsoft.Json;
+        var context = new MqttContext(
+            new DatabaseConnectionSettings
+            {
+                Host = "localhost",
+                Database = "mqtt",
+                Port = 5432,
+                Username = "postgres",
+                Password = "postgres"
+            });
 
-    using Storage;
-    using Storage.Database;
+        Console.WriteLine("Delete database...");
+        context.Database.EnsureDeleted();
+
+        Console.WriteLine("Create database...");
+        context.Database.EnsureCreated();
+
+        Console.WriteLine("Adding seed data...");
+        SeedData(context);
+
+        Console.WriteLine("Press any key to close this window...");
+        Console.ReadKey();
+    }
 
     /// <summary>
-    ///     A program to setup the database.
+    ///     Seeds the database with some data. Use this method to add custom data as needed.
     /// </summary>
-    public static class Program
+    /// <param name="context">The <see cref="MqttContext" /> to use.</param>
+    private static void SeedData(MqttContext context)
     {
-        /// <summary>
-        ///     The main method of the program.
-        /// </summary>
-        public static void Main()
+        var version = new DbVersion { Version = "1.0.0.0", VersionName = "Sicario", CreatedAt = DateTimeOffset.Now };
+
+        if (context.DbVersions is null)
         {
-            Console.WriteLine("Setting up the database...");
-            var context = new MqttContext(
-                new DatabaseConnectionSettings
-                {
-                    Host = "localhost",
-                    Database = "mqtt",
-                    Port = 5432,
-                    Username = "postgres",
-                    Password = "postgres"
-                });
-
-            Console.WriteLine("Delete database...");
-            context.Database.EnsureDeleted();
-
-            Console.WriteLine("Create database...");
-            context.Database.EnsureCreated();
-
-            Console.WriteLine("Adding seed data...");
-            SeedData(context);
-
-            Console.WriteLine("Press any key to close this window...");
-            Console.ReadKey();
+            return;
         }
 
-        /// <summary>
-        ///     Seeds the database with some data. Use this method to add custom data as needed.
-        /// </summary>
-        /// <param name="context">The <see cref="MqttContext" /> to use.</param>
-        private static void SeedData(MqttContext context)
+        context.DbVersions.Add(version);
+        context.SaveChanges();
+
+        var user = new User
         {
-            var version = new DbVersion { Version = "1.0.0.0", VersionName = "Sicario", CreatedAt = DateTimeOffset.Now };
+            UserName = "Hans",
+            AccessFailedCount = 0,
+            ConcurrencyStamp = new Guid().ToString(),
+            CreatedAt = DateTimeOffset.Now,
+            Email = "hans@hans.de",
+            EmailConfirmed = true,
+            LockoutEnabled = false,
+            NormalizedEmail = "HANS@HANS.DE",
+            NormalizedUserName = "HANS",
+            PhoneNumber = "01234567890",
+            SecurityStamp = new Guid().ToString(),
+            TwoFactorEnabled = false,
+            PhoneNumberConfirmed = true,
+            ValidateClientId = true,
+            ThrottleUser = true,
+            MonthlyByteLimit = 10000
+        };
 
-            if (context.DbVersions is null)
-            {
-                return;
-            }
+        context.Users.Add(user);
 
-            context.DbVersions.Add(version);
-            context.SaveChanges();
+        user.PasswordHash = new PasswordHasher<User>().HashPassword(user, "Hans");
 
-            var user = new User
-            {
-                UserName = "Hans",
-                AccessFailedCount = 0,
-                ConcurrencyStamp = new Guid().ToString(),
-                CreatedAt = DateTimeOffset.Now,
-                Email = "hans@hans.de",
-                EmailConfirmed = true,
-                LockoutEnabled = false,
-                NormalizedEmail = "HANS@HANS.DE",
-                NormalizedUserName = "HANS",
-                PhoneNumber = "01234567890",
-                SecurityStamp = new Guid().ToString(),
-                TwoFactorEnabled = false,
-                PhoneNumberConfirmed = true,
-                ValidateClientId = true,
-                ThrottleUser = true,
-                MonthlyByteLimit = 10000
-            };
+        context.SaveChanges();
 
-            context.Users.Add(user);
+        context.UserClaims.Add(new UserClaim
+        {
+            ClaimType = "SubscriptionBlacklist",
+            ClaimValue = JsonConvert.SerializeObject(new List<string> { "a", "b/+", "c/#" }),
+            UserId = 1,
+            CreatedAt = DateTimeOffset.Now
+        });
 
-            user.PasswordHash = new PasswordHasher<User>().HashPassword(user, "Hans");
+        context.UserClaims.Add(new UserClaim
+        {
+            ClaimType = "SubscriptionWhitelist",
+            ClaimValue = JsonConvert.SerializeObject(new List<string> { "d", "e/+", "f/#" }),
+            UserId = 1,
+            CreatedAt = DateTimeOffset.Now
+        });
 
-            context.SaveChanges();
+        context.UserClaims.Add(new UserClaim
+        {
+            ClaimType = "PublishBlacklist",
+            ClaimValue = JsonConvert.SerializeObject(new List<string> { "a", "b/+", "c/#" }),
+            UserId = 1,
+            CreatedAt = DateTimeOffset.Now
+        });
 
-            context.UserClaims.Add(new UserClaim
-            {
-                ClaimType = "SubscriptionBlacklist",
-                ClaimValue = JsonConvert.SerializeObject(new List<string> { "a", "b/+", "c/#" }),
-                UserId = 1,
-                CreatedAt = DateTimeOffset.Now
-            });
+        context.UserClaims.Add(new UserClaim
+        {
+            ClaimType = "PublishWhitelist",
+            ClaimValue = JsonConvert.SerializeObject(new List<string> { "d", "e/+", "f/#" }),
+            UserId = 1,
+            CreatedAt = DateTimeOffset.Now
+        });
 
-            context.UserClaims.Add(new UserClaim
-            {
-                ClaimType = "SubscriptionWhitelist",
-                ClaimValue = JsonConvert.SerializeObject(new List<string> { "d", "e/+", "f/#" }),
-                UserId = 1,
-                CreatedAt = DateTimeOffset.Now
-            });
-
-            context.UserClaims.Add(new UserClaim
-            {
-                ClaimType = "PublishBlacklist",
-                ClaimValue = JsonConvert.SerializeObject(new List<string> { "a", "b/+", "c/#" }),
-                UserId = 1,
-                CreatedAt = DateTimeOffset.Now
-            });
-
-            context.UserClaims.Add(new UserClaim
-            {
-                ClaimType = "PublishWhitelist",
-                ClaimValue = JsonConvert.SerializeObject(new List<string> { "d", "e/+", "f/#" }),
-                UserId = 1,
-                CreatedAt = DateTimeOffset.Now
-            });
-
-            context.SaveChanges();
-        }
+        context.SaveChanges();
     }
 }
