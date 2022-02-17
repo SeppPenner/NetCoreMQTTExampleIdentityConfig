@@ -1,4 +1,4 @@
-#pragma warning disable IDE0065 // Die global using-Anweisung wurde falsch platziert.
+#pragma warning disable IDE0065 // Die using-Anweisung wurde falsch platziert.
 global using System.Reflection;
 global using System.Runtime.Caching;
 global using System.Security.Authentication;
@@ -32,4 +32,4 @@ global using Storage.Mappings;
 global using TopicCheck;
 
 global using ILogger = Serilog.ILogger;
-#pragma warning restore IDE0065 // Die global using-Anweisung wurde falsch platziert.
+#pragma warning restore IDE0065 // Die using-Anweisung wurde falsch platziert.
