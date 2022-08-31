@@ -309,6 +309,134 @@
             <param name="date">The date to get the current month end from.</param>
             <returns>A new <see cref="T:System.DateTimeOffset"/> that represents the end of the current month.</returns>
         </member>
+        <member name="T:NetCoreMQTTExampleIdentityConfig.MqttService">
+            <inheritdoc cref="T:Microsoft.Extensions.Hosting.BackgroundService"/>
+            <summary>
+                The main service class of the <see cref="T:NetCoreMQTTExampleIdentityConfig.MqttService" />.
+            </summary>
+        </member>
+        <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.logger">
+            <summary>
+            The logger.
+            </summary>
+        </member>
+        <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.serviceName">
+            <summary>
+            The service name.
+            </summary>
+        </member>
+        <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.certificate">
+            <summary>
+            The certificate.
+            </summary>
+        </member>
+        <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.databaseContext">
+            <summary>
+                The database context.
+            </summary>
+        </member>
+        <member name="P:NetCoreMQTTExampleIdentityConfig.MqttService.BytesDivider">
+            <summary>
+            The bytes divider. (Used to convert from bytes to kilobytes and so on).
+            </summary>
+        </member>
+        <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.Hasher">
+            <summary>
+                The <see cref="T:Microsoft.AspNetCore.Identity.PasswordHasher`1" />.
+            </summary>
+        </member>
+        <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.DataLimitCacheMonth">
+            <summary>
+            Gets or sets the data limit cache for throttling for monthly data.
+            </summary>
+        </member>
+        <member name="P:NetCoreMQTTExampleIdentityConfig.MqttService.MqttServiceConfiguration">
+            <summary>
+            Gets or sets the MQTT service configuration.
+            </summary>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.#ctor(Storage.MqttSettings,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2,Storage.MqttContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NetCoreMQTTExampleIdentityConfig.MqttService"/> class.
+            </summary>
+            <param name="mqttServiceConfiguration">The MQTT service configuration.</param>
+            <param name="serviceName">The service name.</param>
+            <param name="certificate">The certificate.</param>
+            <param name="databaseContext">The database context.</param>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc cref="T:Microsoft.Extensions.Hosting.BackgroundService"/>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc cref="T:Microsoft.Extensions.Hosting.BackgroundService"/>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.ExecuteAsync(System.Threading.CancellationToken)">
+            <inheritdoc cref="T:Microsoft.Extensions.Hosting.BackgroundService"/>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.IsUserThrottled(System.String,System.Int64,System.Int64)">
+            <summary>
+            Checks whether a user has used the maximum of its publishing limit for the month or not.
+            </summary>
+            <param name="clientId">The client identifier.</param>
+            <param name="sizeInBytes">The message size in bytes.</param>
+            <param name="monthlyByteLimit">The monthly byte limit.</param>
+            <returns>A value indicating whether the user will be throttled or not.</returns>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.GetClientIdPrefix(System.String)">
+            <summary>
+                Gets the client id prefix for a client id if there is one or <c>null</c> else.
+            </summary>
+            <param name="clientId">The client id.</param>
+            <returns>The client id prefix for a client id if there is one or <c>null</c> else.</returns>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.ValidateConnectionAsync(MQTTnet.Server.ValidatingConnectionEventArgs)">
+            <summary>
+            Validates the MQTT connection.
+            </summary>
+            <param name="args">The arguments.</param>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.InterceptSubscriptionAsync(MQTTnet.Server.InterceptingSubscriptionEventArgs)">
+            <summary>
+            Validates the MQTT subscriptions.
+            </summary>
+            <param name="args">The arguments.</param>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.InterceptApplicationMessagePublishAsync(MQTTnet.Server.InterceptingPublishEventArgs)">
+            <summary>
+            Validates the MQTT application messages.
+            </summary>
+            <param name="args">The arguments.</param>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.StartMqttServer">
+            <summary>
+            Starts the MQTT server.
+            </summary>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.LogMessage(MQTTnet.Server.InterceptingSubscriptionEventArgs,System.Boolean)">
+            <summary> 
+                Logs the message from the MQTT subscription interceptor context. 
+            </summary> 
+            <param name="args">The arguments.</param> 
+            <param name="successful">A <see cref="T:System.Boolean"/> value indicating whether the subscription was successful or not.</param> 
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.LogMessage(MQTTnet.Server.InterceptingPublishEventArgs)">
+            <summary>
+                Logs the message from the MQTT message interceptor context.
+            </summary>
+            <param name="args">The arguments.</param>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.LogMessage(MQTTnet.Server.ValidatingConnectionEventArgs,System.Boolean)">
+            <summary> 
+                Logs the message from the MQTT connection validation context. 
+            </summary> 
+            <param name="args">The arguments.</param> 
+            <param name="showPassword">A <see cref="T:System.Boolean"/> value indicating whether the password is written to the log or not.</param> 
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.LogMemoryInformation">
+            <summary>
+            Logs the heartbeat message with some memory information.
+            </summary>
+        </member>
         <member name="T:NetCoreMQTTExampleIdentityConfig.Program">
             <summary>
                 The main program class.
@@ -334,24 +462,9 @@
                 The startup class.
             </summary>
         </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Startup.Hasher">
+        <member name="F:NetCoreMQTTExampleIdentityConfig.Startup.serviceName">
             <summary>
-                The <see cref="T:Microsoft.AspNetCore.Identity.PasswordHasher`1" />.
-            </summary>
-        </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Startup.DataLimitCacheMonth">
-            <summary>
-            Gets or sets the data limit cache for throttling for monthly data.
-            </summary>
-        </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Startup.Logger">
-            <summary>
-            The logger.
-            </summary>
-        </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Startup.databaseContext">
-            <summary>
-                The database context.
+            The service name.
             </summary>
         </member>
         <member name="M:NetCoreMQTTExampleIdentityConfig.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
@@ -377,42 +490,6 @@
                 Configures the services.
             </summary>
             <param name="services">The services.</param>
-        </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.Startup.GetClientIdPrefix(System.String)">
-            <summary>
-                Gets the client id prefix for a client id if there is one or <c>null</c> else.
-            </summary>
-            <param name="clientId">The client id.</param>
-            <returns>The client id prefix for a client id if there is one or <c>null</c> else.</returns>
-        </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.Startup.LogMessage(MQTTnet.Server.MqttSubscriptionInterceptorContext,System.Boolean)">
-            <summary> 
-                Logs the message from the MQTT subscription interceptor context. 
-            </summary> 
-            <param name="context">The MQTT subscription interceptor context.</param> 
-            <param name="successful">A <see cref="T:System.Boolean"/> value indicating whether the subscription was successful or not.</param> 
-        </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.Startup.LogMessage(MQTTnet.Server.MqttApplicationMessageInterceptorContext)">
-            <summary>
-                Logs the message from the MQTT message interceptor context.
-            </summary>
-            <param name="context">The MQTT message interceptor context.</param>
-        </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.Startup.LogMessage(MQTTnet.Server.MqttConnectionValidatorContext,System.Boolean)">
-            <summary> 
-                Logs the message from the MQTT connection validation context. 
-            </summary> 
-            <param name="context">The MQTT connection validation context.</param> 
-            <param name="showPassword">A <see cref="T:System.Boolean"/> value indicating whether the password is written to the log or not.</param> 
-        </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.Startup.IsUserThrottled(System.String,System.Int64,System.Int64)">
-            <summary>
-            Checks whether a user has used the maximum of its publishing limit for the month or not.
-            </summary>
-            <param name="clientId">The client identifier.</param>
-            <param name="sizeInBytes">The message size in bytes.</param>
-            <param name="monthlyByteLimit">The monthly byte limit.</param>
-            <returns>A value indicating whether the user will be throttled or not.</returns>
         </member>
     </members>
 </doc>
