@@ -65,10 +65,14 @@ public class MqttService : BackgroundService
     public MqttService(MqttSettings mqttServiceConfiguration, string serviceName, X509Certificate2 certificate, MqttContext databaseContext)
     {
         this.MqttServiceConfiguration = mqttServiceConfiguration;
-        this.logger = Log.ForContext("Type", nameof(MqttService));
         this.serviceName = serviceName;
         this.certificate = certificate;
         this.databaseContext = databaseContext;
+
+        // Create the logger.
+        this.logger = LoggerConfig.GetLoggerConfiguration(nameof(MqttService))
+            .WriteTo.Sink((ILogEventSink)Log.Logger)
+            .CreateLogger();
     }
 
     /// <inheritdoc cref="BackgroundService"/>
@@ -491,12 +495,14 @@ public class MqttService : BackgroundService
     /// <param name="successful">A <see cref="bool"/> value indicating whether the subscription was successful or not.</param> 
     private void LogMessage(InterceptingSubscriptionEventArgs args, bool successful)
     {
+#pragma warning disable Serilog004 // Constant MessageTemplate verifier
         this.logger.Information(
             successful
                 ? "New subscription: ClientId = {ClientId}, TopicFilter = {TopicFilter}"
                 : "Subscription failed for clientId = {ClientId}, TopicFilter = {TopicFilter}",
             args.ClientId,
             args.TopicFilter);
+#pragma warning restore Serilog004 // Constant MessageTemplate verifier
     }
 
     /// <summary>
