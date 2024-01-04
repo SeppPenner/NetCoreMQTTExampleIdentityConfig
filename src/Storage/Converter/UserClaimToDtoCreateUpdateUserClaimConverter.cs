@@ -33,7 +33,7 @@ public class UserClaimToDtoCreateUpdateUserClaimConverter : ITypeConverter<UserC
         {
             ClaimType = enumValue,
             UserId = source.UserId,
-            ClaimValues = JsonConvert.DeserializeObject<List<string>>(source.ClaimValue) ?? new List<string>()
+            ClaimValues = JsonConvert.DeserializeObject<List<string>>(source?.ClaimValue ?? string.Empty) ?? new List<string>()
         };
     }
 }

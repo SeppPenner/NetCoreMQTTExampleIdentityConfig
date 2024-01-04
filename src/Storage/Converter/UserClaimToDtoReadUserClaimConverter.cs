@@ -32,7 +32,7 @@ public class UserClaimToDtoReadUserClaimConverter : ITypeConverter<UserClaim, Dt
         {
             ClaimType = enumValue,
             UserId = source.UserId,
-            ClaimValues = JsonConvert.DeserializeObject<List<string>>(source.ClaimValue) ?? new List<string>(),
+            ClaimValues = JsonConvert.DeserializeObject<List<string>>(source.ClaimValue ?? string.Empty) ?? new List<string>(),
             CreatedAt = source.CreatedAt,
             Id = source.Id,
             UpdatedAt = source.UpdatedAt

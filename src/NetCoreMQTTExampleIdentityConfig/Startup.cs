@@ -57,7 +57,7 @@ public class Startup
 
         // Use swagger stuff
         app.UseOpenApi();
-        app.UseSwaggerUi3();
+        app.UseSwaggerUi();
 
         // Use HTTPS.
         app.UseHttpsRedirection();
@@ -81,6 +81,11 @@ public class Startup
 
         // Load MQTT configuration settings
         var mqttSettings = this.Configuration.GetSection("MqttSettings").Get<MqttSettings>();
+
+        if (mqttSettings is null)
+        {
+            throw new ArgumentNullException(nameof(mqttSettings));
+        }
 
         // Configure database context
         var databaseContext = new MqttContext(databaseConnection);

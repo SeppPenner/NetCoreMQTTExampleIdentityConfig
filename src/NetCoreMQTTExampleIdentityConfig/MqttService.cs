@@ -190,7 +190,7 @@ public class MqttService : BackgroundService
         {
             var currentUser = this.databaseContext.Users.FirstOrDefault(u => u.UserName == args.UserName);
 
-            if (currentUser == null)
+            if (currentUser is null)
             {
                 args.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
                 this.LogMessage(args, true);
@@ -198,6 +198,13 @@ public class MqttService : BackgroundService
             }
 
             if (args.UserName != currentUser.UserName)
+            {
+                args.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
+                this.LogMessage(args, true);
+                return Task.CompletedTask;
+            }
+
+            if (string.IsNullOrWhiteSpace(currentUser.PasswordHash))
             {
                 args.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
                 this.LogMessage(args, true);
@@ -388,13 +395,13 @@ public class MqttService : BackgroundService
 
             if (currentUser.ThrottleUser)
             {
-                var payload = args.ApplicationMessage?.Payload;
+                var payload = args.ApplicationMessage?.PayloadSegment;
 
-                if (payload != null)
+                if (payload is not null)
                 {
-                    if (currentUser.MonthlyByteLimit != null)
+                    if (currentUser.MonthlyByteLimit is not null)
                     {
-                        if (this.IsUserThrottled(args.ClientId, payload.Length, currentUser.MonthlyByteLimit.Value))
+                        if (this.IsUserThrottled(args.ClientId, payload.Value.Count, currentUser.MonthlyByteLimit.Value))
                         {
                             args.ProcessPublish = false;
                             return Task.CompletedTask;
@@ -511,7 +518,7 @@ public class MqttService : BackgroundService
     /// <param name="args">The arguments.</param>
     private void LogMessage(InterceptingPublishEventArgs args)
     {
-        var payload = args.ApplicationMessage?.Payload == null ? null : Encoding.UTF8.GetString(args.ApplicationMessage.Payload);
+        var payload = args.ApplicationMessage?.PayloadSegment is null ? null : Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment);
 
         this.logger.Information(
             "Message: ClientId = {ClientId}, Topic = {Topic}, Payload = {Payload}, QoS = {Qos}, Retain-Flag = {RetainFlag}",

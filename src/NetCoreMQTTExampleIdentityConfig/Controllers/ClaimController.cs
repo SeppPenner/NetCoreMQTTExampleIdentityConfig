@@ -173,7 +173,7 @@ public class ClaimController : ControllerBase
             else
             {
                 foundClaim.UpdatedAt = DateTimeOffset.Now;
-                var currentClaimValue = JsonConvert.DeserializeObject<List<string>>(foundClaim.ClaimValue) ?? new List<string>();
+                var currentClaimValue = JsonConvert.DeserializeObject<List<string>>(foundClaim.ClaimValue ?? string.Empty) ?? new List<string>();
                 currentClaimValue.AddRange(createUserClaim.ClaimValues);
                 foundClaim.ClaimValue = JsonConvert.SerializeObject(currentClaimValue.Distinct());
                 this.databaseContext.UserClaims.Update(foundClaim);
