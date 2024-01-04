@@ -10,13 +10,15 @@ from a database using [Asp.Net Identity](https://docs.microsoft.com/en-us/aspnet
 [![GitHub stars](https://img.shields.io/github/stars/SeppPenner/NetCoreMQTTExampleIdentityConfig.svg)](https://github.com/SeppPenner/NetCoreMQTTExampleIdentityConfig/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://raw.githubusercontent.com/SeppPenner/NetCoreMQTTExampleIdentityConfig/master/License.txt)
 [![Known Vulnerabilities](https://snyk.io/test/github/SeppPenner/NetCoreMQTTExampleIdentityConfig/badge.svg)](https://snyk.io/test/github/SeppPenner/NetCoreMQTTExampleIdentityConfig)
+[![Blogger](https://img.shields.io/badge/Follow_me_on-blogger-orange)](https://franzhuber23.blogspot.de/)
+[![Patreon](https://img.shields.io/badge/Patreon-F96854?logo=patreon&logoColor=white)](https://patreon.com/SeppPennerOpenSourceDevelopment)
+[![PayPal](https://img.shields.io/badge/PayPal-00457C?logo=paypal&logoColor=white)](https://paypal.me/th070795)
 
 ## How to use this project
 1. Create your users and intial setup using the `DatabaseSetup` project or using the API.
 
 ## API documentation
 * The API can be found under http://localhost:5000/swagger/ and is documented with Swagger.
-
 
 ## Temporarily locking clients
 Users can be blocked temporarily (until the end of the current month) if they exceed a certain data quota.
