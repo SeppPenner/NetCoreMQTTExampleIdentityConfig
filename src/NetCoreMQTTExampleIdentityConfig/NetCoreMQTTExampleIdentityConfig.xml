@@ -355,12 +355,17 @@
         </member>
         <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.Hasher">
             <summary>
-                The <see cref="T:Microsoft.AspNetCore.Identity.PasswordHasher`1" />.
+            The <see cref="T:Microsoft.AspNetCore.Identity.PasswordHasher`1" />.
             </summary>
         </member>
         <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.DataLimitCacheMonth">
             <summary>
-            Gets or sets the data limit cache for throttling for monthly data.
+            The data limit cache for throttling for monthly data.
+            </summary>
+        </member>
+        <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.clientIds">
+            <summary>
+            The client identifiers.
             </summary>
         </member>
         <member name="P:NetCoreMQTTExampleIdentityConfig.MqttService.MqttServiceConfiguration">
@@ -417,6 +422,12 @@
         <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.InterceptApplicationMessagePublishAsync(MQTTnet.Server.InterceptingPublishEventArgs)">
             <summary>
             Validates the MQTT application messages.
+            </summary>
+            <param name="args">The arguments.</param>
+        </member>
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.ClientDisconnectedAsync(MQTTnet.Server.ClientDisconnectedEventArgs)">
+            <summary>
+            Handles the client connected event.
             </summary>
             <param name="args">The arguments.</param>
         </member>
