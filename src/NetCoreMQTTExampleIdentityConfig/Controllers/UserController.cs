@@ -19,11 +19,6 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers;
 public class UserController : ControllerBase
 {
     /// <summary>
-    ///     The auto mapper.
-    /// </summary>
-    private readonly IMapper autoMapper;
-
-    /// <summary>
     ///     The database context.
     /// </summary>
     private readonly MqttContext databaseContext;
@@ -49,13 +44,11 @@ public class UserController : ControllerBase
     /// <param name="logger">The logger.</param>
     /// <param name="databaseContext">The database context.</param>
     /// <param name="userManager">The user manager.</param>
-    /// <param name="autoMapper">The auto mapper service.</param>
-    public UserController(ILogger logger, MqttContext databaseContext, UserManager<User> userManager, IMapper autoMapper)
+    public UserController(ILogger logger, MqttContext databaseContext, UserManager<User> userManager)
     {
         this.logger = logger;
         this.databaseContext = databaseContext;
         this.userManager = userManager;
-        this.autoMapper = autoMapper;
         this.passwordHasher = new PasswordHasher<User>();
     }
 
@@ -83,12 +76,12 @@ public class UserController : ControllerBase
 
             var users = await this.databaseContext.Users.ToListAsync();
 
-            if (users?.Count == 0)
+            if (users.Count == 0)
             {
                 return this.Ok("[]");
             }
 
-            var returnUsers = this.autoMapper.Map<IEnumerable<DtoReadUser>>(users);
+            var returnUsers = users.ToDtoReadUsers();
             return this.Ok(returnUsers);
         }
         catch (Exception ex)
@@ -133,7 +126,7 @@ public class UserController : ControllerBase
                 return this.NotFound(userId);
             }
 
-            var returnUser = this.autoMapper.Map<DtoReadUser>(user);
+            var returnUser = user.ToDtoReadUser();
             return this.Ok(returnUser);
         }
         catch (Exception ex)
@@ -168,14 +161,14 @@ public class UserController : ControllerBase
         {
             this.logger.Information("Executed CreateUser with user {@CreateUser}.", createUser);
 
-            var user = this.autoMapper.Map<User>(createUser);
+            var user = createUser.ToUser();
             user.CreatedAt = DateTimeOffset.Now;
             var identityResult = await this.userManager.CreateAsync(user, createUser.Password);
             await this.databaseContext.SaveChangesAsync();
 
             if (identityResult.Succeeded)
             {
-                var returnUser = this.autoMapper.Map<DtoReadUser>(user);
+                var returnUser = user.ToDtoReadUser();
                 return this.Ok(returnUser);
             }
 
@@ -231,7 +224,7 @@ public class UserController : ControllerBase
 
             var concurrencyStamp = resultUser.ConcurrencyStamp;
             var createdAt = resultUser.CreatedAt;
-            resultUser = this.autoMapper.Map<User>(updateUser);
+            resultUser = updateUser.ToUser();
             resultUser.UpdatedAt = DateTimeOffset.Now;
             resultUser.PasswordHash = this.passwordHasher.HashPassword(resultUser, updateUser.Password);
             resultUser.SecurityStamp = new Guid().ToString();
@@ -244,7 +237,7 @@ public class UserController : ControllerBase
 
             if (identityResult.Succeeded)
             {
-                var returnUser = this.autoMapper.Map<DtoReadUser>(resultUser);
+                var returnUser = resultUser.ToDtoReadUser();
                 returnUser.Id = userId;
                 return this.Ok(returnUser);
             }

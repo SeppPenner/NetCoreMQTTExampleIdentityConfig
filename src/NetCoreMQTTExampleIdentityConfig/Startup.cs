@@ -101,9 +101,6 @@ public class Startup
         // Add response compression
         services.AddResponseCompression();
 
-        // Add AutoMapper
-        services.AddAutoMapper(typeof(UserClaimsProfile), typeof(UserProfile));
-
         // Add swagger
         // Add swagger document for the API
         services.AddOpenApiDocument(

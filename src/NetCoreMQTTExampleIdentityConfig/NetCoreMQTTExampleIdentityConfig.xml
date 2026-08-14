@@ -10,11 +10,6 @@
             </summary>
             <seealso cref="T:Microsoft.AspNetCore.Mvc.ControllerBase" />
         </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController.autoMapper">
-            <summary>
-                The auto mapper.
-            </summary>
-        </member>
         <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController.databaseContext">
             <summary>
                 The database context.
@@ -25,13 +20,12 @@
             The logger.
             </summary>
         </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController.#ctor(Serilog.ILogger,Storage.MqttContext,AutoMapper.IMapper)">
+        <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController.#ctor(Serilog.ILogger,Storage.MqttContext)">
             <summary>
                 Initializes a new instance of the <see cref="T:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController" /> class.
             </summary>
             <param name="logger">The logger.</param>
             <param name="databaseContext">The database context.</param>
-            <param name="autoMapper">The auto mapper service.</param>
         </member>
         <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.ClaimController.GetClaims">
             <summary>
@@ -164,11 +158,6 @@
             </summary>
             <seealso cref="T:Microsoft.AspNetCore.Mvc.ControllerBase" />
         </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.autoMapper">
-            <summary>
-                The auto mapper.
-            </summary>
-        </member>
         <member name="F:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.databaseContext">
             <summary>
                 The database context.
@@ -189,14 +178,13 @@
             The logger.
             </summary>
         </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.#ctor(Serilog.ILogger,Storage.MqttContext,Microsoft.AspNetCore.Identity.UserManager{Storage.Database.User},AutoMapper.IMapper)">
+        <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.#ctor(Serilog.ILogger,Storage.MqttContext,Microsoft.AspNetCore.Identity.UserManager{Storage.Database.User})">
             <summary>
                 Initializes a new instance of the <see cref="T:NetCoreMQTTExampleIdentityConfig.Controllers.UserController" /> class.
             </summary>
             <param name="logger">The logger.</param>
             <param name="databaseContext">The database context.</param>
             <param name="userManager">The user manager.</param>
-            <param name="autoMapper">The auto mapper service.</param>
         </member>
         <member name="M:NetCoreMQTTExampleIdentityConfig.Controllers.UserController.GetUsers">
             <summary>

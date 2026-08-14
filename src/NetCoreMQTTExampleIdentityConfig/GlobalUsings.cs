@@ -5,8 +5,6 @@ global using System.Security.Authentication;
 global using System.Security.Cryptography.X509Certificates;
 global using System.Text;
 
-global using AutoMapper;
-
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;

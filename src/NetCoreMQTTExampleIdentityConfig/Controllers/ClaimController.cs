@@ -19,11 +19,6 @@ namespace NetCoreMQTTExampleIdentityConfig.Controllers;
 public class ClaimController : ControllerBase
 {
     /// <summary>
-    ///     The auto mapper.
-    /// </summary>
-    private readonly IMapper autoMapper;
-
-    /// <summary>
     ///     The database context.
     /// </summary>
     private readonly MqttContext databaseContext;
@@ -38,12 +33,10 @@ public class ClaimController : ControllerBase
     /// </summary>
     /// <param name="logger">The logger.</param>
     /// <param name="databaseContext">The database context.</param>
-    /// <param name="autoMapper">The auto mapper service.</param>
-    public ClaimController(ILogger logger, MqttContext databaseContext, IMapper autoMapper)
+    public ClaimController(ILogger logger, MqttContext databaseContext)
     {
         this.logger = logger;
         this.databaseContext = databaseContext;
-        this.autoMapper = autoMapper;
     }
 
     /// <summary>
@@ -70,12 +63,12 @@ public class ClaimController : ControllerBase
 
             var claims = await this.databaseContext.UserClaims.ToListAsync();
 
-            if (claims?.Count == 0)
+            if (claims.Count == 0)
             {
                 return this.Ok("[]");
             }
 
-            var returnUserClaims = this.autoMapper.Map<List<DtoReadUserClaim>>(claims);
+            var returnUserClaims = claims.ToDtoReadUserClaims();
             return this.Ok(returnUserClaims);
         }
         catch (Exception ex)
@@ -120,7 +113,7 @@ public class ClaimController : ControllerBase
                 return this.NotFound(claimId);
             }
 
-            var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(claim);
+            var returnUserClaim = claim.ToDtoReadUserClaim();
             return this.Ok(returnUserClaim);
         }
         catch (Exception ex)
@@ -155,7 +148,7 @@ public class ClaimController : ControllerBase
         {
             this.logger.Information("Executed CreateOrUpdateClaim with user claim {@CreateUserClaim}.", createUserClaim);
 
-            var claim = this.autoMapper.Map<UserClaim>(createUserClaim);
+            var claim = createUserClaim.ToUserClaim();
             claim.CreatedAt = DateTimeOffset.Now;
 
             var foundClaim = await this.databaseContext.UserClaims.FirstOrDefaultAsync(
@@ -168,7 +161,7 @@ public class ClaimController : ControllerBase
                 claim.CreatedAt = DateTimeOffset.Now;
                 await this.databaseContext.UserClaims.AddAsync(claim);
                 await this.databaseContext.SaveChangesAsync();
-                returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(claim);
+                returnUserClaim = claim.ToDtoReadUserClaim();
             }
             else
             {
@@ -178,7 +171,7 @@ public class ClaimController : ControllerBase
                 foundClaim.ClaimValue = JsonConvert.SerializeObject(currentClaimValue.Distinct());
                 this.databaseContext.UserClaims.Update(foundClaim);
                 await this.databaseContext.SaveChangesAsync();
-                returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(foundClaim);
+                returnUserClaim = foundClaim.ToDtoReadUserClaim();
             }
 
             return this.Ok(returnUserClaim);
@@ -230,13 +223,13 @@ public class ClaimController : ControllerBase
             }
 
             var createdAt = resultClaim.CreatedAt;
-            resultClaim = this.autoMapper.Map<UserClaim>(updateUserClaim);
+            resultClaim = updateUserClaim.ToUserClaim();
             resultClaim.UpdatedAt = DateTimeOffset.Now;
             resultClaim.CreatedAt = createdAt;
             resultClaim.Id = claimId;
             this.databaseContext.UserClaims.Update(resultClaim);
             await this.databaseContext.SaveChangesAsync();
-            var returnUserClaim = this.autoMapper.Map<DtoReadUserClaim>(resultClaim);
+            var returnUserClaim = resultClaim.ToDtoReadUserClaim();
             return this.Ok(returnUserClaim);
         }
         catch (Exception ex)
