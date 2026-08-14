@@ -118,7 +118,7 @@ public class Startup
 
         // Read certificate
         var currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
-        var certificate = new X509Certificate2(
+        var certificate = X509CertificateLoader.LoadPkcs12FromFile(
             Path.Combine(currentPath, "certificate.pfx"),
             "test",
             X509KeyStorageFlags.Exportable);
