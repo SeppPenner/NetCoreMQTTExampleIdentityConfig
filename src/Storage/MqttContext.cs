@@ -79,6 +79,12 @@ public class MqttContext : IdentityDbContext<User, Role, long, UserClaim, UserRo
     /// <param name="builder">The builder being used to construct the model for this context.</param>
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        // Let the identity framework configure its own entities first. Everything below overrides
+        // what it sets. Without this call the entities the framework adds on its own are left
+        // unconfigured, which since ASP.NET Core Identity 10 breaks the model with
+        // "The entity type 'IdentityPasskeyData' requires a primary key to be defined."
+        base.OnModelCreating(builder);
+
         builder.Entity<User>(
             b =>
             {
