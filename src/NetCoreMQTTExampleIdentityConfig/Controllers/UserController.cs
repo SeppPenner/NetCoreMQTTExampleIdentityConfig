@@ -214,7 +214,9 @@ public class UserController : ControllerBase
         {
             this.logger.Information("Executed UpdateUser with user {@UpdateUser} for user identifier: {@UserId}.", updateUser, userId);
 
-            var resultUser = await this.databaseContext.Users.AsNoTracking().FirstOrDefaultAsync(b => b.Id == userId);
+            // Tracked on purpose. The user manager attaches the instance it is handed, so writing onto a
+            // second instance with the same key makes Entity Framework throw instead of updating.
+            var resultUser = await this.databaseContext.Users.FirstOrDefaultAsync(b => b.Id == userId);
 
             if (resultUser == null)
             {
@@ -222,15 +224,10 @@ public class UserController : ControllerBase
                 return this.NotFound(userId);
             }
 
-            var concurrencyStamp = resultUser.ConcurrencyStamp;
-            var createdAt = resultUser.CreatedAt;
-            resultUser = updateUser.ToUser();
+            updateUser.ApplyTo(resultUser);
             resultUser.UpdatedAt = DateTimeOffset.Now;
             resultUser.PasswordHash = this.passwordHasher.HashPassword(resultUser, updateUser.Password);
             resultUser.SecurityStamp = Guid.NewGuid().ToString();
-            resultUser.ConcurrencyStamp = concurrencyStamp;
-            resultUser.CreatedAt = createdAt;
-            resultUser.Id = userId;
 
             var identityResult = await this.userManager.UpdateAsync(resultUser);
             await this.databaseContext.SaveChangesAsync();
@@ -238,7 +235,6 @@ public class UserController : ControllerBase
             if (identityResult.Succeeded)
             {
                 var returnUser = resultUser.ToDtoReadUser();
-                returnUser.Id = userId;
                 return this.Ok(returnUser);
             }
 

@@ -64,19 +64,32 @@ public static class UserMapper
     /// <returns>The mapped <see cref="User" />.</returns>
     public static User ToUser(this DtoCreateUpdateUser user)
     {
-        return new User
-        {
-            UserName = user.UserName,
-            Email = user.Email,
-            EmailConfirmed = user.EmailConfirmed,
-            PhoneNumber = user.PhoneNumber,
-            PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-            TwoFactorEnabled = user.TwoFactorEnabled,
-            LockoutEnd = user.LockoutEnd,
-            LockoutEnabled = user.LockoutEnabled,
-            AccessFailedCount = user.AccessFailedCount,
-            ClientIdPrefix = user.ClientIdPrefix,
-            ClientId = user.ClientId
-        };
+        var target = new User();
+        user.ApplyTo(target);
+        return target;
+    }
+
+    /// <summary>
+    ///     Copies the values of a <see cref="DtoCreateUpdateUser" /> onto an existing <see cref="User" />.
+    /// </summary>
+    /// <param name="user">The <see cref="DtoCreateUpdateUser" /> to take the values from.</param>
+    /// <param name="target">The <see cref="User" /> to write the values to.</param>
+    /// <remarks>
+    ///     Used by the update endpoint, which has to write onto the entity it loaded. Building a second
+    ///     <see cref="User" /> with the same key instead makes Entity Framework refuse to track it.
+    /// </remarks>
+    public static void ApplyTo(this DtoCreateUpdateUser user, User target)
+    {
+        target.UserName = user.UserName;
+        target.Email = user.Email;
+        target.EmailConfirmed = user.EmailConfirmed;
+        target.PhoneNumber = user.PhoneNumber;
+        target.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
+        target.TwoFactorEnabled = user.TwoFactorEnabled;
+        target.LockoutEnd = user.LockoutEnd;
+        target.LockoutEnabled = user.LockoutEnabled;
+        target.AccessFailedCount = user.AccessFailedCount;
+        target.ClientIdPrefix = user.ClientIdPrefix;
+        target.ClientId = user.ClientId;
     }
 }
