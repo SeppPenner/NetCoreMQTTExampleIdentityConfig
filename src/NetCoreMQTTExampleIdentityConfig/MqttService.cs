@@ -36,6 +36,11 @@ public class MqttService : BackgroundService
     private readonly MqttContext databaseContext;
 
     /// <summary>
+    /// The MQTT server. Only available after <see cref="StartMqttServer"/> has run.
+    /// </summary>
+    private MqttServer? mqttServer;
+
+    /// <summary>
     /// The bytes divider. (Used to convert from bytes to kilobytes and so on).
     /// </summary>
     private static double BytesDivider => 1048576.0;
@@ -51,9 +56,9 @@ public class MqttService : BackgroundService
     private static readonly MemoryCache DataLimitCacheMonth = MemoryCache.Default;
 
     /// <summary>
-    /// The client identifiers.
+    /// The client identifiers of the currently connected clients. Used as a set, the value is never read.
     /// </summary>
-    private static readonly HashSet<string> clientIds = [];
+    private static readonly ConcurrentDictionary<string, byte> clientIds = new();
 
     /// <summary>
     /// Gets or sets the MQTT service configuration.
@@ -89,7 +94,7 @@ public class MqttService : BackgroundService
         }
 
         this.logger.Information("Starting service");
-        this.StartMqttServer();
+        await this.StartMqttServer();
         this.logger.Information("Service started");
         await base.StartAsync(cancellationToken);
     }
@@ -97,6 +102,11 @@ public class MqttService : BackgroundService
     /// <inheritdoc cref="BackgroundService"/>
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
+        if (this.mqttServer is not null)
+        {
+            await this.mqttServer.StopAsync();
+        }
+
         await base.StopAsync(cancellationToken);
     }
 
@@ -199,7 +209,7 @@ public class MqttService : BackgroundService
                 return Task.CompletedTask;
             }
 
-            if (clientIds.TryGetValue(args.ClientId, out var _))
+            if (clientIds.ContainsKey(args.ClientId))
             {
                 args.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
                 this.logger.Warning("A client with client id {ClientId} is already connected", args.ClientId);
@@ -243,6 +253,13 @@ public class MqttService : BackgroundService
 
             if (!currentUser.ValidateClientId)
             {
+                if (!clientIds.TryAdd(args.ClientId, 0))
+                {
+                    args.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
+                    this.logger.Warning("A client with client id {ClientId} is already connected", args.ClientId);
+                    return Task.CompletedTask;
+                }
+
                 args.ReasonCode = MqttConnectReasonCode.Success;
                 args.SessionItems.Add(args.ClientId, currentUser);
                 this.LogMessage(args, false);
@@ -263,6 +280,13 @@ public class MqttService : BackgroundService
             else
             {
                 args.SessionItems.Add(currentUser.ClientIdPrefix, currentUser);
+            }
+
+            if (!clientIds.TryAdd(args.ClientId, 0))
+            {
+                args.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
+                this.logger.Warning("A client with client id {ClientId} is already connected", args.ClientId);
+                return Task.CompletedTask;
             }
 
             args.ReasonCode = MqttConnectReasonCode.Success;
@@ -492,16 +516,17 @@ public class MqttService : BackgroundService
     /// Handles the client connected event.
     /// </summary>
     /// <param name="args">The arguments.</param>
-    private async Task ClientDisconnectedAsync(ClientDisconnectedEventArgs args)
+    private Task ClientDisconnectedAsync(ClientDisconnectedEventArgs args)
     {
-        clientIds.Remove(args.ClientId);
-        await Task.Delay(1);
+        clientIds.TryRemove(args.ClientId, out _);
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// Starts the MQTT server.
     /// </summary>
-    private void StartMqttServer()
+    /// <returns>A <see cref="Task"/> representing any asynchronous operation.</returns>
+    private async Task StartMqttServer()
     {
         var optionsBuilder = new MqttServerOptionsBuilder()
 #if DEBUG
@@ -513,12 +538,12 @@ public class MqttService : BackgroundService
             .WithEncryptionCertificate(this.certificate.Export(X509ContentType.Pfx))
             .WithEncryptionSslProtocol(SslProtocols.Tls12);
 
-        var mqttServer = new MqttServerFactory().CreateMqttServer(optionsBuilder.Build());
-        mqttServer.ValidatingConnectionAsync += this.ValidateConnectionAsync;
-        mqttServer.InterceptingSubscriptionAsync += this.InterceptSubscriptionAsync;
-        mqttServer.InterceptingPublishAsync += this.InterceptApplicationMessagePublishAsync;
-        mqttServer.ClientDisconnectedAsync += this.ClientDisconnectedAsync;
-        mqttServer.StartAsync();
+        this.mqttServer = new MqttServerFactory().CreateMqttServer(optionsBuilder.Build());
+        this.mqttServer.ValidatingConnectionAsync += this.ValidateConnectionAsync;
+        this.mqttServer.InterceptingSubscriptionAsync += this.InterceptSubscriptionAsync;
+        this.mqttServer.InterceptingPublishAsync += this.InterceptApplicationMessagePublishAsync;
+        this.mqttServer.ClientDisconnectedAsync += this.ClientDisconnectedAsync;
+        await this.mqttServer.StartAsync();
     }
 
     /// <summary> 

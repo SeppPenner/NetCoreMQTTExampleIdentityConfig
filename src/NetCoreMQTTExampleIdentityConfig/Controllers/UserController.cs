@@ -227,7 +227,7 @@ public class UserController : ControllerBase
             resultUser = updateUser.ToUser();
             resultUser.UpdatedAt = DateTimeOffset.Now;
             resultUser.PasswordHash = this.passwordHasher.HashPassword(resultUser, updateUser.Password);
-            resultUser.SecurityStamp = new Guid().ToString();
+            resultUser.SecurityStamp = Guid.NewGuid().ToString();
             resultUser.ConcurrencyStamp = concurrencyStamp;
             resultUser.CreatedAt = createdAt;
             resultUser.Id = userId;

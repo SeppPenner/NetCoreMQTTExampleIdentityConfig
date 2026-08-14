@@ -49,6 +49,9 @@ public class Startup
             app.UseHsts();
         }
 
+        // Use routing. Without it the controllers below are never reached.
+        app.UseRouting();
+
         // Use authentication.
         app.UseAuthentication();
 
@@ -61,6 +64,9 @@ public class Startup
 
         // Use HTTPS.
         app.UseHttpsRedirection();
+
+        // Map the API controllers.
+        app.UseEndpoints(endpoints => endpoints.MapControllers());
 
         _ = app.ApplicationServices.GetService<MqttService>();
     }

@@ -66,7 +66,7 @@ public static class Program
         {
             UserName = "Hans",
             AccessFailedCount = 0,
-            ConcurrencyStamp = new Guid().ToString(),
+            ConcurrencyStamp = Guid.NewGuid().ToString(),
             CreatedAt = DateTimeOffset.Now,
             Email = "hans@hans.de",
             EmailConfirmed = true,
@@ -74,7 +74,7 @@ public static class Program
             NormalizedEmail = "HANS@HANS.DE",
             NormalizedUserName = "HANS",
             PhoneNumber = "01234567890",
-            SecurityStamp = new Guid().ToString(),
+            SecurityStamp = Guid.NewGuid().ToString(),
             TwoFactorEnabled = false,
             PhoneNumberConfirmed = true,
             ValidateClientId = true,
