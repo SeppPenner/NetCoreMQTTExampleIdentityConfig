@@ -31,9 +31,9 @@ public class MqttService : BackgroundService
     private readonly X509Certificate2 certificate;
 
     /// <summary>
-    ///     The database context.
+    ///     The scope factory used to get a database context per callback.
     /// </summary>
-    private readonly MqttContext databaseContext;
+    private readonly IServiceScopeFactory scopeFactory;
 
     /// <summary>
     /// The MQTT server. Only available after <see cref="StartMqttServer"/> has run.
@@ -71,13 +71,13 @@ public class MqttService : BackgroundService
     /// <param name="mqttServiceConfiguration">The MQTT service configuration.</param>
     /// <param name="serviceName">The service name.</param>
     /// <param name="certificate">The certificate.</param>
-    /// <param name="databaseContext">The database context.</param>
-    public MqttService(MqttSettings mqttServiceConfiguration, string serviceName, X509Certificate2 certificate, MqttContext databaseContext)
+    /// <param name="scopeFactory">The scope factory used to get a database context per callback.</param>
+    public MqttService(MqttSettings mqttServiceConfiguration, string serviceName, X509Certificate2 certificate, IServiceScopeFactory scopeFactory)
     {
         this.MqttServiceConfiguration = mqttServiceConfiguration;
         this.serviceName = serviceName;
         this.certificate = certificate;
-        this.databaseContext = databaseContext;
+        this.scopeFactory = scopeFactory;
 
         // Create the logger.
         this.logger = LoggerConfig.GetLoggerConfiguration(nameof(MqttService))
@@ -177,12 +177,13 @@ public class MqttService : BackgroundService
     /// <summary>
     ///     Gets the client id prefix for a client id if there is one or <c>null</c> else.
     /// </summary>
+    /// <param name="databaseContext">The database context of the current callback.</param>
     /// <param name="clientId">The client id.</param>
     /// <returns>The client id prefix for a client id if there is one or <c>null</c> else.</returns>
-    private string GetClientIdPrefix(string clientId)
+    private static string GetClientIdPrefix(MqttContext databaseContext, string clientId)
     {
         var clientIdPrefixes =
-            this.databaseContext.Users.Where(u => u.ClientIdPrefix != null).Select(u => u.ClientIdPrefix);
+            databaseContext.Users.Where(u => u.ClientIdPrefix != null).Select(u => u.ClientIdPrefix);
 
         foreach (var clientIdPrefix in clientIdPrefixes)
         {
@@ -216,7 +217,10 @@ public class MqttService : BackgroundService
                 return Task.CompletedTask;
             }
 
-            var currentUser = this.databaseContext.Users.FirstOrDefault(u => u.UserName == args.UserName);
+            using var scope = this.scopeFactory.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<MqttContext>();
+
+            var currentUser = databaseContext.Users.FirstOrDefault(u => u.UserName == args.UserName);
 
             if (currentUser is null)
             {
@@ -308,7 +312,10 @@ public class MqttService : BackgroundService
     {
         try
         {
-            var clientIdPrefix = this.GetClientIdPrefix(args.ClientId);
+            using var scope = this.scopeFactory.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<MqttContext>();
+
+            var clientIdPrefix = GetClientIdPrefix(databaseContext, args.ClientId);
             User? currentUser = null;
 
             if (string.IsNullOrWhiteSpace(clientIdPrefix))
@@ -336,14 +343,14 @@ public class MqttService : BackgroundService
             var topic = args.TopicFilter.Topic;
 
             // Get blacklist
-            var subscriptionBlackList = this.databaseContext.UserClaims.FirstOrDefault(
+            var subscriptionBlackList = databaseContext.UserClaims.FirstOrDefault(
             uc => uc.UserId == currentUser.Id
                   && uc.ClaimType == ClaimType.SubscriptionBlacklist.ToString());
 
             var blacklist = subscriptionBlackList?.ClaimValue is null ? [] : JsonConvert.DeserializeObject<List<string>>(subscriptionBlackList.ClaimValue) ?? [];
 
             // Get whitelist
-            var subscriptionWhitelist = this.databaseContext.UserClaims.FirstOrDefault(
+            var subscriptionWhitelist = databaseContext.UserClaims.FirstOrDefault(
             uc => uc.UserId == currentUser.Id
                   && uc.ClaimType == ClaimType.SubscriptionWhitelist.ToString());
 
@@ -409,7 +416,10 @@ public class MqttService : BackgroundService
     {
         try
         {
-            var clientIdPrefix = this.GetClientIdPrefix(args.ClientId);
+            using var scope = this.scopeFactory.CreateScope();
+            var databaseContext = scope.ServiceProvider.GetRequiredService<MqttContext>();
+
+            var clientIdPrefix = GetClientIdPrefix(databaseContext, args.ClientId);
             User? currentUser = null;
 
             if (string.IsNullOrWhiteSpace(clientIdPrefix))
@@ -450,14 +460,14 @@ public class MqttService : BackgroundService
             }
 
             // Get blacklist
-            var publishBlackList = this.databaseContext.UserClaims.FirstOrDefault(
+            var publishBlackList = databaseContext.UserClaims.FirstOrDefault(
             uc => uc.UserId == currentUser.Id
                   && uc.ClaimType == ClaimType.PublishBlacklist.ToString());
 
             var blacklist = publishBlackList?.ClaimValue is null ? [] : JsonConvert.DeserializeObject<List<string>>(publishBlackList.ClaimValue) ?? [];
 
             // Get whitelist
-            var publishWhitelist = this.databaseContext.UserClaims.FirstOrDefault(
+            var publishWhitelist = databaseContext.UserClaims.FirstOrDefault(
             uc => uc.UserId == currentUser.Id
                   && uc.ClaimType == ClaimType.PublishWhitelist.ToString());
 

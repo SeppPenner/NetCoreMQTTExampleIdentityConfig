@@ -93,9 +93,6 @@ public class Startup
             throw new ArgumentNullException(nameof(mqttSettings));
         }
 
-        // Configure database context
-        var databaseContext = new MqttContext(databaseConnection);
-
         // Added the identity stuff and the database connection
         services.AddDbContext<MqttContext>(options => options.UseNpgsql(databaseConnection.ToConnectionString()));
 
@@ -129,8 +126,14 @@ public class Startup
             "test",
             X509KeyStorageFlags.Exportable);
 
-        // Workaround to have a hosted background service available by DI.
-        services.AddSingleton(_ => new MqttService(mqttSettings, this.serviceName.Name ?? "MqttService", certificate, databaseContext));
+        // Workaround to have a hosted background service available by DI. The service is a singleton and
+        // the database context is scoped, so it gets the scope factory and opens its own scope per callback.
+        services.AddSingleton(
+            provider => new MqttService(
+                mqttSettings,
+                this.serviceName.Name ?? "MqttService",
+                certificate,
+                provider.GetRequiredService<IServiceScopeFactory>()));
         services.AddSingleton<IHostedService>(p => p.GetRequiredService<MqttService>());
 
         // Add the MQTT connection handler.

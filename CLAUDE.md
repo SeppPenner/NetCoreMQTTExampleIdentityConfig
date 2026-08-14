@@ -202,21 +202,37 @@ Do not silently "clean up" these, they are existing behaviour:
   `Timezone`, but `OnConfiguring` runs afterwards and calls `UseNpgsql` with a second connection
   string built inline from the same settings **without** those two values. The inline string wins.
   Changing `ToConnectionString()` alone therefore has no effect on the context.
-- **`MqttService` gets its own long lived `MqttContext`.** `Startup.ConfigureServices` constructs
-  one with `new MqttContext(databaseConnection)` and hands it to the singleton `MqttService`, while
-  the controllers get a scoped context from DI. The broker therefore shares a single `DbContext`
-  across all its callbacks. That is not thread safe in EF Core and it is the reason the broker
-  keeps seeing stale data after an API write. It is left as it is because fixing it means
-  restructuring the service into a scope factory, which is more than an example needs, but do not
-  copy the pattern.
-- **Two things listen on port 1883.** `Program.CreateHostBuilder` binds Kestrel to 1883 with
-  `UseMqtt()`, and in a **Debug** build `MqttService.StartMqttServer` additionally opens MQTTnet's
-  own default endpoint on 1883. In Release the second one is compiled out through
-  `WithoutDefaultEndpoint()`, so only the Debug configuration has the conflict.
-- **The encrypted endpoint is the real one.** `MqttSettings.Port` defaults to 8883 and
-  `StartMqttServer` puts the TLS endpoint there, with `certificate.pfx` and TLS 1.2. The
-  certificate, `cert.pem` and `key.pem` are tracked in the repository and the password for all
-  three is `test`. That is fine for an example and unacceptable anywhere else.
+- **`MqttService` opens a scope per callback.** The service is a singleton and `MqttContext` is
+  scoped, so it takes an `IServiceScopeFactory` and each of `ValidateConnectionAsync`,
+  `InterceptSubscriptionAsync` and `InterceptApplicationMessagePublishAsync` starts with
+
+  ```csharp
+  using var scope = this.scopeFactory.CreateScope();
+  var databaseContext = scope.ServiceProvider.GetRequiredService<MqttContext>();
+  ```
+
+  Do not "simplify" that back into a context field. Until version 1.0.15.0 the service held one
+  `MqttContext` that `Startup` had built with `new`, shared across every callback of every client.
+  A `DbContext` is not thread safe, and the change tracker of a context that lives as long as the
+  process also kept handing out the user rows it had already seen, so an API write did not reach
+  the broker. `GetClientIdPrefix` takes the context as a parameter for the same reason.
+- **Kestrel's port 1883 goes nowhere.** `Program.CreateHostBuilder` binds Kestrel to 1883 with
+  `UseMqtt()` and `Startup` registers `AddMqttConnectionHandler()`, but the broker that actually
+  serves clients is built by hand in `MqttService.StartMqttServer` with
+  `new MqttServerFactory().CreateMqttServer(...)`, and that instance is not the one the ASP.NET
+  Core integration wires up. A plain MQTT client that connects to 1883 gets the connection dropped.
+  In a **Debug** build `StartMqttServer` additionally opens MQTTnet's own default endpoint on 1883,
+  which then collides with Kestrel; in Release that is compiled out via `WithoutDefaultEndpoint()`.
+- **The TLS endpoint does not currently complete a handshake.** `MqttSettings.Port` defaults to
+  8883 and `StartMqttServer` puts the TLS endpoint there, with `certificate.pfx` and TLS 1.2. Two
+  separate problems sit on top of each other, both unfixed as of version 1.0.15.0:
+  the tracked `certificate.pfx` expired on **2020-06-20**, and with a freshly generated
+  certificate in its place the server still aborts the connection during the handshake, before any
+  callback runs and without logging anything (MQTTnet's internal logger is not wired to Serilog).
+  A raw `SslStream` against 8883 fails the same way, so it is the server, not the client. Verifying
+  anything through the broker therefore needs this fixed first. The certificate, `cert.pem` and
+  `key.pem` are tracked in the repository and the password for all three is `test`, which is fine
+  for an example and unacceptable anywhere else.
 - **`GetClientIdPrefix` depends on row order.** It walks all users with a non null
   `ClientIdPrefix` and returns the first one the client id starts with. `ClientIdPrefix` defaults
   to the empty string, not to null, so every user with the default passes the filter and

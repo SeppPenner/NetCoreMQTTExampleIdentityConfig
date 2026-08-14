@@ -331,9 +331,9 @@
             The certificate.
             </summary>
         </member>
-        <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.databaseContext">
+        <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.scopeFactory">
             <summary>
-                The database context.
+                The scope factory used to get a database context per callback.
             </summary>
         </member>
         <member name="F:NetCoreMQTTExampleIdentityConfig.MqttService.mqttServer">
@@ -366,14 +366,14 @@
             Gets or sets the MQTT service configuration.
             </summary>
         </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.#ctor(Storage.MqttSettings,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2,Storage.MqttContext)">
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.#ctor(Storage.MqttSettings,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2,Microsoft.Extensions.DependencyInjection.IServiceScopeFactory)">
             <summary>
             Initializes a new instance of the <see cref="T:NetCoreMQTTExampleIdentityConfig.MqttService"/> class.
             </summary>
             <param name="mqttServiceConfiguration">The MQTT service configuration.</param>
             <param name="serviceName">The service name.</param>
             <param name="certificate">The certificate.</param>
-            <param name="databaseContext">The database context.</param>
+            <param name="scopeFactory">The scope factory used to get a database context per callback.</param>
         </member>
         <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.StartAsync(System.Threading.CancellationToken)">
             <inheritdoc cref="T:Microsoft.Extensions.Hosting.BackgroundService"/>
@@ -393,10 +393,11 @@
             <param name="monthlyByteLimit">The monthly byte limit.</param>
             <returns>A value indicating whether the user will be throttled or not.</returns>
         </member>
-        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.GetClientIdPrefix(System.String)">
+        <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.GetClientIdPrefix(Storage.MqttContext,System.String)">
             <summary>
                 Gets the client id prefix for a client id if there is one or <c>null</c> else.
             </summary>
+            <param name="databaseContext">The database context of the current callback.</param>
             <param name="clientId">The client id.</param>
             <returns>The client id prefix for a client id if there is one or <c>null</c> else.</returns>
         </member>
