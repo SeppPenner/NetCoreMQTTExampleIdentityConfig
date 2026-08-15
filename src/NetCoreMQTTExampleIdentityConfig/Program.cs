@@ -46,12 +46,10 @@ public class Program
                     {
                         webBuilder.UseContentRoot(currentLocation);
                         webBuilder.UseStartup<Startup>();
-                        webBuilder.UseKestrel(
-                            o =>
-                                {
-                                    o.ListenAnyIP(1883, l => l.UseMqtt());
-                                    o.ListenAnyIP(5000);
-                                });
+
+                        // Kestrel only serves the REST API. The MQTT endpoints belong to the
+                        // server that MqttService builds itself.
+                        webBuilder.UseKestrel(o => o.ListenAnyIP(5000));
                     })
             .UseSerilog()
             .UseWindowsService()

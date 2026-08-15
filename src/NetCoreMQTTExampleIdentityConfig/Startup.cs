@@ -136,9 +136,6 @@ public class Startup
                 provider.GetRequiredService<IServiceScopeFactory>()));
         services.AddSingleton<IHostedService>(p => p.GetRequiredService<MqttService>());
 
-        // Add the MQTT connection handler.
-        services.AddMqttConnectionHandler();
-
         // Add the MVC stuff
         services.AddMvc();
     }

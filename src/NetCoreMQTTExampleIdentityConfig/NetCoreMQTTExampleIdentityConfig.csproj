@@ -27,7 +27,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="10.0.11" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.11" />
-        <PackageReference Include="MQTTnet.AspNetCore" Version="5.2.0.1603" />
+        <PackageReference Include="MQTTnet.Server" Version="5.2.0.1603" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
         <PackageReference Include="NSwag.AspNetCore" Version="14.7.1" />
         <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
