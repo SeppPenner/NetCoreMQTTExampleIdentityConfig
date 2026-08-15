@@ -545,7 +545,7 @@ public class MqttService : BackgroundService
             .WithoutDefaultEndpoint()
 #endif
             .WithEncryptedEndpoint().WithEncryptedEndpointPort(this.MqttServiceConfiguration.Port)
-            .WithEncryptionCertificate(this.certificate.Export(X509ContentType.Pfx))
+            .WithEncryptionCertificate(this.certificate)
             .WithEncryptionSslProtocol(SslProtocols.Tls12);
 
         this.mqttServer = new MqttServerFactory().CreateMqttServer(optionsBuilder.Build());
