@@ -249,6 +249,12 @@ Do not silently "clean up" these, they are existing behaviour:
   `/C=DE/ST=BY/L=Test/O=Test/OU=Test/CN=Test/emailAddress=Test` and the password `test` that both
   `Startup` and the `README.md` hard code. In Git Bash the `-subj` argument needs
   `MSYS_NO_PATHCONV=1`, otherwise MSYS rewrites it into a Windows path.
+- **The connection log never contains a password.** `MqttService.LogMessage(ValidatingConnectionEventArgs, bool)`
+  writes `New connection: ...` for an accepted client and `Connection failed for clientId = ...` for
+  a rejected one, and the `bool` says which of the two it is. Until version 1.0.17.0 that parameter
+  was called `showPassword`, every rejection wrote the plaintext password into the log file next to
+  the executable and every line started with `New connection`, so the log said nothing about the
+  decision. Do not put the password back in for debugging.
 - **`GetClientIdPrefix` depends on row order.** It walks all users with a non null
   `ClientIdPrefix` and returns the first one the client id starts with. `ClientIdPrefix` defaults
   to the empty string, not to null, so every user with the default passes the filter and

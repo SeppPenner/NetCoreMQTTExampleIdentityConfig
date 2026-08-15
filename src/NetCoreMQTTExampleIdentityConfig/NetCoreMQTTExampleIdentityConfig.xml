@@ -445,11 +445,12 @@
             <param name="args">The arguments.</param>
         </member>
         <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.LogMessage(MQTTnet.Server.ValidatingConnectionEventArgs,System.Boolean)">
-            <summary> 
-                Logs the message from the MQTT connection validation context. 
-            </summary> 
-            <param name="args">The arguments.</param> 
-            <param name="showPassword">A <see cref="T:System.Boolean"/> value indicating whether the password is written to the log or not.</param> 
+            <summary>
+                Logs the message from the MQTT connection validation context. The password is never written to the log, a
+                rejected client usually sends the password of a human being.
+            </summary>
+            <param name="args">The arguments.</param>
+            <param name="successful">A <see cref="T:System.Boolean"/> value indicating whether the connection was successful or not.</param>
         </member>
         <member name="M:NetCoreMQTTExampleIdentityConfig.MqttService.LogMemoryInformation">
             <summary>

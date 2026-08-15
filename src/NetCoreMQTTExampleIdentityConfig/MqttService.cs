@@ -207,6 +207,7 @@ public class MqttService : BackgroundService
             if (string.IsNullOrWhiteSpace(args.UserName))
             {
                 args.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
+                this.LogMessage(args, false);
                 return Task.CompletedTask;
             }
 
@@ -225,21 +226,21 @@ public class MqttService : BackgroundService
             if (currentUser is null)
             {
                 args.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-                this.LogMessage(args, true);
+                this.LogMessage(args, false);
                 return Task.CompletedTask;
             }
 
             if (args.UserName != currentUser.UserName)
             {
                 args.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-                this.LogMessage(args, true);
+                this.LogMessage(args, false);
                 return Task.CompletedTask;
             }
 
             if (string.IsNullOrWhiteSpace(currentUser.PasswordHash))
             {
                 args.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-                this.LogMessage(args, true);
+                this.LogMessage(args, false);
                 return Task.CompletedTask;
             }
 
@@ -251,7 +252,7 @@ public class MqttService : BackgroundService
             if (hashingResult == PasswordVerificationResult.Failed)
             {
                 args.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-                this.LogMessage(args, true);
+                this.LogMessage(args, false);
                 return Task.CompletedTask;
             }
 
@@ -266,7 +267,7 @@ public class MqttService : BackgroundService
 
                 args.ReasonCode = MqttConnectReasonCode.Success;
                 args.SessionItems.Add(args.ClientId, currentUser);
-                this.LogMessage(args, false);
+                this.LogMessage(args, true);
                 return Task.CompletedTask;
             }
 
@@ -275,7 +276,7 @@ public class MqttService : BackgroundService
                 if (args.ClientId != currentUser.ClientId)
                 {
                     args.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
-                    this.LogMessage(args, true);
+                    this.LogMessage(args, false);
                     return Task.CompletedTask;
                 }
 
@@ -294,7 +295,7 @@ public class MqttService : BackgroundService
             }
 
             args.ReasonCode = MqttConnectReasonCode.Success;
-            this.LogMessage(args, false);
+            this.LogMessage(args, true);
             return Task.CompletedTask;
         }
         catch (Exception ex)
@@ -590,32 +591,24 @@ public class MqttService : BackgroundService
             args.ApplicationMessage?.Retain);
     }
 
-    /// <summary> 
-    ///     Logs the message from the MQTT connection validation context. 
-    /// </summary> 
-    /// <param name="args">The arguments.</param> 
-    /// <param name="showPassword">A <see cref="bool"/> value indicating whether the password is written to the log or not.</param> 
-    private void LogMessage(ValidatingConnectionEventArgs args, bool showPassword)
+    /// <summary>
+    ///     Logs the message from the MQTT connection validation context. The password is never written to the log, a
+    ///     rejected client usually sends the password of a human being.
+    /// </summary>
+    /// <param name="args">The arguments.</param>
+    /// <param name="successful">A <see cref="bool"/> value indicating whether the connection was successful or not.</param>
+    private void LogMessage(ValidatingConnectionEventArgs args, bool successful)
     {
-        if (showPassword)
-        {
-            this.logger.Information(
-                "New connection: ClientId = {ClientId}, Endpoint = {@Endpoint}, Username = {UserName}, Password = {Password}, CleanSession = {CleanSession}",
-                args.ClientId,
-                args.RemoteEndPoint,
-                args.UserName,
-                args.Password,
-                args.CleanSession);
-        }
-        else
-        {
-            this.logger.Information(
-                "New connection: ClientId = {ClientId}, Endpoint = {@Endpoint}, Username = {UserName}, CleanSession = {CleanSession}",
-                args.ClientId,
-                args.RemoteEndPoint,
-                args.UserName,
-                args.CleanSession);
-        }
+#pragma warning disable Serilog004 // Constant MessageTemplate verifier
+        this.logger.Information(
+            successful
+                ? "New connection: ClientId = {ClientId}, Endpoint = {@Endpoint}, Username = {UserName}, CleanSession = {CleanSession}"
+                : "Connection failed for clientId = {ClientId}, Endpoint = {@Endpoint}, Username = {UserName}, CleanSession = {CleanSession}",
+            args.ClientId,
+            args.RemoteEndPoint,
+            args.UserName,
+            args.CleanSession);
+#pragma warning restore Serilog004 // Constant MessageTemplate verifier
     }
 
     /// <summary>
