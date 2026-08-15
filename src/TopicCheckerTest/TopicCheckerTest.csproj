@@ -25,6 +25,13 @@
 
     <ItemGroup>
         <ProjectReference Include="..\TopicCheck\TopicCheck.csproj" />
+        <ProjectReference Include="..\Storage\Storage.csproj" />
+        <ProjectReference Include="..\NetCoreMQTTExampleIdentityConfig\NetCoreMQTTExampleIdentityConfig.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The host project is a web project, a test project referencing it needs the same framework reference. -->
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
 </Project>

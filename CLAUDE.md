@@ -36,10 +36,14 @@ One solution `src/NetCoreMQTTExampleIdentityConfig.sln` with exactly five projec
 - `src/TopicCheck/TopicCheck.csproj`, `OutputType` `Library`, a single static class `TopicChecker`
   with the single method `Regex` that matches an MQTT topic against an allowed topic pattern. No
   package references except GitVersion.
-- `src/TopicCheckerTest/TopicCheckerTest.csproj`, MSTest, the only test project. Three files,
-  `TopicCheckerTestsPlusOperator.cs`, `TopicCheckerTestsCrossOperator.cs` and
-  `TopicCheckerTestsMultipleOperators.cs`, 13 tests in total, all against `TopicChecker.Regex`.
-  Nothing else in the repository is covered by tests.
+- `src/TopicCheckerTest/TopicCheckerTest.csproj`, MSTest, the only test project. The name is older
+  than its content. `TopicCheckerTestsPlusOperator.cs`, `TopicCheckerTestsCrossOperator.cs`,
+  `TopicCheckerTestsMultipleOperators.cs` and `TopicCheckerTestsWithoutOperators.cs` cover
+  `TopicChecker.Regex`, `DateTimeOffsetExtensionsTests.cs` the end of the month and the time zone
+  offset, `UserMapperTests.cs` and `UserClaimMapperTests.cs` the manual mapping that replaced
+  AutoMapper. 37 tests in total. It references `TopicCheck`, `Storage` and the host project, and
+  therefore carries the `Microsoft.AspNetCore.App` framework reference. Everything that needs a
+  database or a running broker is still uncovered.
 - `src/DatabaseSetup/DatabaseSetup.csproj`, `OutputType` `Exe`, a console program that drops and
   recreates the database and seeds one `DbVersion`, one user `Hans` with password `Hans` and his
   four claims. Its connection settings are hard coded in `Program.cs`, they are not read from
@@ -83,10 +87,10 @@ dotnet test src/NetCoreMQTTExampleIdentityConfig.sln -c Release
 - Restore needs nuget.org. If a private feed is configured globally on the machine and answers 404
   for public packages, restore fails with `NU1301`. Then build with an explicit source:
   `dotnet build src/NetCoreMQTTExampleIdentityConfig.sln --source https://api.nuget.org/v3/index.json`.
-- `dotnet test` runs the 13 `TopicChecker` tests. They need no network and no database. Everything
-  else in the repository has no test coverage at all, so a behaviour change in the broker, the
-  controllers or the database layer is **not** covered by a green test run. Never claim a test run
-  happened without running it.
+- `dotnet test` runs 37 tests, the topic checker, the date extensions and the two mappers. They need
+  no network and no database. The broker callbacks, the controllers and everything that talks to the
+  database still have no test coverage, so a behaviour change there is **not** covered by a green
+  test run. Never claim a test run happened without running it.
 - Beyond the tests, a behaviour change in the API or the database layer is verified against a
   throwaway PostgreSQL container, see "Verifying against a real database" below.
 
