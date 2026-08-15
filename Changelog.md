@@ -1,5 +1,6 @@
 # Change history
 
+* **Version 1.0.17.0 (2026-08-15)** : Renewed the example certificate (now the same one in all four MQTT example repositories, valid until 2036-12-31), added the missing check of the client identifier against the client identifier prefix of a user, removed the plaintext password from the log and named the rejected connections there, took the time zone offset from the local time zone, extended the tests from 13 to 37.
 * **Version 1.0.16.0 (2026-08-15)** : Removed the dead Kestrel MQTT endpoint, fixed the TLS endpoint that never completed a handshake, renewed the example certificate.
 * **Version 1.0.15.0 (2026-08-14)** : Fixed the MQTT service sharing one database context across all its callbacks.
 * **Version 1.0.14.0 (2026-08-14)** : Removed AutoMapper and replaced it with manual mapping (security fix), updated NuGet packages, moved to Net 10.0, fixed the unreachable REST API, the never filled duplicate client id check, the failing user update and further defects.
