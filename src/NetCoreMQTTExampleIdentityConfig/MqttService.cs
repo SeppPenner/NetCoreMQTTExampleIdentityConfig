@@ -284,6 +284,13 @@ public class MqttService : BackgroundService
             }
             else
             {
+                if (!args.ClientId.StartsWith(currentUser.ClientIdPrefix, StringComparison.Ordinal))
+                {
+                    args.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
+                    this.LogMessage(args, false);
+                    return Task.CompletedTask;
+                }
+
                 args.SessionItems.Add(currentUser.ClientIdPrefix, currentUser);
             }
 

@@ -249,6 +249,11 @@ Do not silently "clean up" these, they are existing behaviour:
   `/C=DE/ST=BY/L=Test/O=Test/OU=Test/CN=Test/emailAddress=Test` and the password `test` that both
   `Startup` and the `README.md` hard code. In Git Bash the `-subj` argument needs
   `MSYS_NO_PATHCONV=1`, otherwise MSYS rewrites it into a Windows path.
+- **A client identifier prefix is checked with `StartsWith`.** A user with a `ClientIdPrefix` and
+  `ValidateClientId = true` used to be accepted with any client identifier at all, the prefix went
+  into the session items but was never compared. `ValidateConnectionAsync` rejects a mismatch since
+  version 1.0.17.0. `GetClientIdPrefix` still walks the prefixes of all users to find the session
+  item of an already connected client, that is a different lookup and unrelated to this check.
 - **The connection log never contains a password.** `MqttService.LogMessage(ValidatingConnectionEventArgs, bool)`
   writes `New connection: ...` for an accepted client and `Connection failed for clientId = ...` for
   a rejected one, and the `bool` says which of the two it is. Until version 1.0.17.0 that parameter
