@@ -224,7 +224,7 @@ openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 3650
 openssl pkcs12 -export -out certificate.pfx -inkey key.pem -in cert.pem
 ```
 
-An example certificate is in the folder, valid until 2036-08-12. Password for all is `test`.
+An example certificate is in the folder, valid until 2036-12-31. Password for all is `test`.
 It is self signed, so a client either has to trust it explicitly or skip the certificate validation.
 
 Change history

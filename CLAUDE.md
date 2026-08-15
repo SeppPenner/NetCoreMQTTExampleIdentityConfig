@@ -238,8 +238,11 @@ Do not silently "clean up" these, they are existing behaviour:
   before any callback runs, while the client only sees the connection being reset. Nothing is
   logged, MQTTnet's internal logger is not wired to Serilog. Pass `this.certificate` directly. That
   is what made port 8883 unreachable until version 1.0.16.0.
-- **The example certificate is self signed and valid until 2036-08-12.** It was regenerated in
-  version 1.0.16.0, the one shipped before that had expired on 2020-06-20. A client still has to
+- **The example certificate is self signed and valid until 2036-12-31.** It was regenerated in
+  version 1.0.17.0, and the same three files now ship in the sibling repositories
+  `NetCoreMQTTExampleDapperConfig`, `NetCoreMQTTExampleJsonConfig` and
+  `NetCoreMQTTExampleJsonConfigHashedPasswords`, so a client trusts one certificate for all four
+  examples. Replacing it here means replacing it there as well. A client still has to
   trust it explicitly or skip validation, which is normal for a self signed example. Regenerating
   it means replacing all three tracked files `certificate.pfx`, `cert.pem` and `key.pem` together,
   with the openssl commands from the `README.md`, the subject
