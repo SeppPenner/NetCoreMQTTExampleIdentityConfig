@@ -117,6 +117,14 @@ the API on `http://localhost:5000`. `DatabaseSetup` ends in `Console.ReadKey()`,
 so the exception on a scripted run is expected and means nothing. Remove the container afterwards
 with `docker rm -f mqtt-verify`.
 
+The broker itself is verified with a throwaway MQTTnet client against port 8883, not with
+`mosquitto_pub`: the certificate is self signed, so the client needs
+`.WithTlsOptions(o => o.UseTls().WithSslProtocols(SslProtocols.Tls12).WithCertificateValidationHandler(_ => true))`.
+The seeded user `Hans` has `ValidateClientId = true` and an empty `ClientId`, so set
+`ValidateClientId` to false in the database first or no client id will ever match. The seed data
+makes `d`, `e/+` and `f/#` the whitelist and `a`, `b/+` and `c/#` the blacklist for both
+subscribing and publishing, which is enough to exercise all three broker callbacks.
+
 ## Code conventions
 
 Follow the surrounding code, it is consistent throughout every file:
@@ -216,23 +224,28 @@ Do not silently "clean up" these, they are existing behaviour:
   A `DbContext` is not thread safe, and the change tracker of a context that lives as long as the
   process also kept handing out the user rows it had already seen, so an API write did not reach
   the broker. `GetClientIdPrefix` takes the context as a parameter for the same reason.
-- **Kestrel's port 1883 goes nowhere.** `Program.CreateHostBuilder` binds Kestrel to 1883 with
-  `UseMqtt()` and `Startup` registers `AddMqttConnectionHandler()`, but the broker that actually
-  serves clients is built by hand in `MqttService.StartMqttServer` with
-  `new MqttServerFactory().CreateMqttServer(...)`, and that instance is not the one the ASP.NET
-  Core integration wires up. A plain MQTT client that connects to 1883 gets the connection dropped.
-  In a **Debug** build `StartMqttServer` additionally opens MQTTnet's own default endpoint on 1883,
-  which then collides with Kestrel; in Release that is compiled out via `WithoutDefaultEndpoint()`.
-- **The TLS endpoint does not currently complete a handshake.** `MqttSettings.Port` defaults to
-  8883 and `StartMqttServer` puts the TLS endpoint there, with `certificate.pfx` and TLS 1.2. Two
-  separate problems sit on top of each other, both unfixed as of version 1.0.15.0:
-  the tracked `certificate.pfx` expired on **2020-06-20**, and with a freshly generated
-  certificate in its place the server still aborts the connection during the handshake, before any
-  callback runs and without logging anything (MQTTnet's internal logger is not wired to Serilog).
-  A raw `SslStream` against 8883 fails the same way, so it is the server, not the client. Verifying
-  anything through the broker therefore needs this fixed first. The certificate, `cert.pem` and
-  `key.pem` are tracked in the repository and the password for all three is `test`, which is fine
-  for an example and unacceptable anywhere else.
+- **There is exactly one MQTT server and Kestrel is not it.** Kestrel serves only the REST API on
+  port 5000, every MQTT endpoint belongs to the server `MqttService.StartMqttServer` builds with
+  `new MqttServerFactory().CreateMqttServer(...)`. Until version 1.0.16.0 `Program` additionally
+  bound Kestrel to 1883 with `UseMqtt()` and `Startup` registered `AddMqttConnectionHandler()`, but
+  that endpoint was never wired to this server, so nothing there applied the user, whitelist or
+  blacklist checks and a client connecting to 1883 was simply dropped. Do not add it back. The
+  project therefore references `MQTTnet.Server`, not `MQTTnet.AspNetCore`.
+- **Hand the encryption certificate to MQTTnet as an object, never as exported bytes.**
+  `WithEncryptionCertificate` has an overload taking a `byte[]`. Feeding it
+  `certificate.Export(X509ContentType.Pfx)` produces a PFX without a password whose private key
+  Windows cannot use for server authentication, and every TLS handshake then dies server side
+  before any callback runs, while the client only sees the connection being reset. Nothing is
+  logged, MQTTnet's internal logger is not wired to Serilog. Pass `this.certificate` directly. That
+  is what made port 8883 unreachable until version 1.0.16.0.
+- **The example certificate is self signed and valid until 2036-08-12.** It was regenerated in
+  version 1.0.16.0, the one shipped before that had expired on 2020-06-20. A client still has to
+  trust it explicitly or skip validation, which is normal for a self signed example. Regenerating
+  it means replacing all three tracked files `certificate.pfx`, `cert.pem` and `key.pem` together,
+  with the openssl commands from the `README.md`, the subject
+  `/C=DE/ST=BY/L=Test/O=Test/OU=Test/CN=Test/emailAddress=Test` and the password `test` that both
+  `Startup` and the `README.md` hard code. In Git Bash the `-subj` argument needs
+  `MSYS_NO_PATHCONV=1`, otherwise MSYS rewrites it into a Windows path.
 - **`GetClientIdPrefix` depends on row order.** It walks all users with a non null
   `ClientIdPrefix` and returns the first one the client id starts with. `ClientIdPrefix` defaults
   to the empty string, not to null, so every user with the default passes the filter and
