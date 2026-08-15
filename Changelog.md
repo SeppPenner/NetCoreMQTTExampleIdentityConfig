@@ -1,5 +1,6 @@
 # Change history
 
+* **Version 1.0.16.0 (2026-08-15)** : Removed the dead Kestrel MQTT endpoint, fixed the TLS endpoint that never completed a handshake, renewed the example certificate.
 * **Version 1.0.15.0 (2026-08-14)** : Fixed the MQTT service sharing one database context across all its callbacks.
 * **Version 1.0.14.0 (2026-08-14)** : Removed AutoMapper and replaced it with manual mapping (security fix), updated NuGet packages, moved to Net 10.0, fixed the unreachable REST API, the never filled duplicate client id check, the failing user update and further defects.
 * **Version 1.0.13.0 (2025-01-07)** : Updated Nuget packages, added audit mode, moved to Net9.0.
