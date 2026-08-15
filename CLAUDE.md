@@ -269,9 +269,10 @@ Do not silently "clean up" these, they are existing behaviour:
   client ids gets a separate monthly budget per client id. `DataLimitCacheMonth` is
   `MemoryCache.Default`, a process wide static, and the entries expire at the end of the current
   month through `DateTimeOffsetExtensions.EndOfCurrentMonth`.
-- **`DateTimeExtensions.GetTimeZoneOffset` hard codes Central European Time.** It returns two hours
-  in daylight saving time and one hour otherwise, regardless of the machine's actual time zone. It
-  is only used to give the cache entries an expiry.
+- **`DateTimeExtensions.GetTimeZoneOffset` asks the local time zone.** It returns
+  `TimeZoneInfo.Local.GetUtcOffset` for the given date, daylight saving time included. Until version
+  1.0.17.0 it returned a hard coded one or two hours, which is the Central European offset and wrong
+  everywhere else. It is only used to give the cache entries an expiry.
 - **`Npgsql.EnableLegacyTimestampBehavior` is switched on** in both `Program.Main` and
   `DatabaseSetup.Program.Main`, so `DateTimeOffset` columns keep the pre Npgsql 6 behaviour. The
   entities use `DateTimeOffset` throughout, without it the writes fail.
